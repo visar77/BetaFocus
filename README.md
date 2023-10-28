@@ -1,1 +1,1 @@
-# BetaFocus lol
+# BetaFocus
