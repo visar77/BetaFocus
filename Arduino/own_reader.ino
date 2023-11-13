@@ -16,19 +16,17 @@ void parsePayload() {
   unsigned char attention;
   unsigned char meditation;
   unsigned int raw_wave;
-  unsigned int waves[8];
-  unsigned int all_values[12];
+  unsigned int waves[8] = {0};
+  unsigned int all_values[12] = {0};
 
-  int valIndex = 0;
+  Serial.println("-----------------------------------");
 
   while (index < payLoadLength) {
     while (payload[index] == 0x55) {
       extendedCodeLevel++;
       index++;
     }
-
     int code = payload[index];
-
     if (code == 0x02) {
       Serial.print("POOR_SIGNAL (0-200): ");
       all_values[0] = payload[++index];
@@ -52,22 +50,28 @@ void parsePayload() {
       Serial.println(all_values[3]);
     } else if (code == 0x83) {
       int length = payload[++index];
-      Serial.print("length:");
-      Serial.println(length);
+      //Serial.print("length:");
+      //Serial.println(length);
       for (int j=0; j<length; j++) {
           waves[j/3] += payload[++index];
-          if (j != 0 && j % 3 == 0) {
+          if ((j != 0 && j % 3 == 0) || j == length-1) {
             Serial.print(j/3);
             Serial.print("-Wave: ");
-            Serial.println(waves[j/3]);
-            all_values[4 + j/3] = waves[j/3];
-            Serial.println(all_values[4 + j/3]);
+            all_values[4 + (j-1)/3] = waves[(j-1)/3];
+            Serial.println(all_values[4 + (j-1)/3]);
           }
       }
-
     }
     index++;
+
   }
+  Serial.print("CSV: ");
+  for (int j=0; j<11; j++) {
+    Serial.print(all_values[j]);
+    Serial.print(";");
+  }
+  Serial.print(all_values[11]);
+  Serial.println("\n-----------------------------------");
 }
 
 void setup() {
