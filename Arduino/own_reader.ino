@@ -28,7 +28,7 @@ void parsePayload() {
     }
     int code = payload[index];
     if (code == 0x02) {
-      Serial.print("POOR_SIGNAL (0-200): ");
+      Serial.print("SIGNAL_QUALITY (0-200): ");
       all_values[0] = payload[++index];
       Serial.println(all_values[0]);
     } else if (code == 0x04) {
@@ -54,13 +54,15 @@ void parsePayload() {
       //Serial.println(length);
       for (int j=0; j<length; j++) {
           waves[j/3] += payload[++index];
-          if ((j != 0 && j % 3 == 0) || j == length-1) {
+          if (j != 0 && j % 3 == 0) {
             Serial.print(j/3);
             Serial.print("-Wave: ");
             all_values[4 + (j-1)/3] = waves[(j-1)/3];
             Serial.println(all_values[4 + (j-1)/3]);
           }
       }
+      Serial.print("8-Wave: ");
+      Serial.println(waves[7]);
     }
     index++;
 
