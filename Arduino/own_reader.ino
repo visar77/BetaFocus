@@ -41,31 +41,34 @@ void parsePayload() {
       Serial.println(all_values[2]);
     } else if (code == 0x80) {
       int length = payload[++index];
-      int raw = 0;
-      for (int j=0; i<length; j++) {
-          raw += payload[++index];
+      if (length != 2) {
+        Serial.println("LENGTH OF RAW_VALUES WAS NOT 2!!! ERROR!!!");
+        return 0;
       }
+      short raw = (payload[index + 2] >> 8) | payload[index + 1];
+      index += 2;
       Serial.print("Raw wave value (-32768 to 32767): ");
       all_values[3] = payload[++index];
       Serial.println(all_values[3]);
     } else if (code == 0x83) {
       int length = payload[++index];
+      if (length != 24) {
+        Serial.println("LENGTH OF EEG_POWERS WAS NOT 24!!! ERROR!!!");
+        return 0;
+      }
       //Serial.print("length:");
       //Serial.println(length);
-      for (int j=0; j<length; j++) {
-          waves[j/3] += payload[++index];
-          if (j != 0 && j % 3 == 0) {
-            Serial.print(j/3);
-            Serial.print("-Wave: ");
-            all_values[4 + (j-1)/3] = waves[(j-1)/3];
-            Serial.println(all_values[4 + (j-1)/3]);
-          }
+      for (int j=0; j<8; j++) {
+          unsigned int first_int = payload[++index];
+          unsigned int second_int = payload[++index];
+          unsigned int third_int = payload[++index];
+          waves[j] = ((first_int << 16) | (second_int << 8) | (third_int));
+          Serial.print(j);
+          Serial.print("-Wave: ");
+          Serial.println(waves[j]);
       }
-      Serial.print("8-Wave: ");
-      Serial.println(waves[7]);
     }
     index++;
-
   }
   Serial.print("CSV: ");
   for (int j=0; j<11; j++) {
