@@ -1,5 +1,9 @@
-def main():
-    print("BetaFocus!")
+import sys
+from gui.window import App
 
-if __name__ == "main":
+
+def main():
+    app = App()
+
+if __name__ == "__main__":
     main()
