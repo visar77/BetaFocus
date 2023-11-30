@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtWidgets import QMainWindow, QApplication, QGridLayout, QWidget, QPushButton, QLabel
-from PyQt5.QtGui import QFont, QPainter, QColor, QPainterPath, QBrush
+from PyQt5.QtGui import QFont, QPainter, QColor, QPainterPath, QBrush, QPalette
 from PyQt5.QtCore import Qt, QRectF
 
 
@@ -21,6 +21,7 @@ class StartButton(QPushButton):
         path.lineTo((rect.topLeft()))               # line to top left corner
 
         p.fillPath(path, QBrush(QColor("green")))
+        p.drawText(rect.center(), "Start")
 
 
 class MainWindow(QMainWindow):
@@ -29,6 +30,7 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         self.resize(1000, 600)
         self.setWindowTitle("BetaFocus")
+        self.setStyleSheet("background-color: black;")
         layout = QGridLayout()
         layout.setAlignment(Qt.AlignHCenter)
         layout.setContentsMargins(20, 20, 20, 100)
@@ -36,9 +38,10 @@ class MainWindow(QMainWindow):
 
         self.start_label = QLabel("BetaFocus", self)
         self.start_label.setFont(start_font)
+        self.start_label.setStyleSheet("color: white;")
         layout.addWidget(self.start_label, 0, 0, 1, 2)
 
-        self.start_button = StartButton(self)
+        self.start_button = StartButton("Start b", self)
         # self.start_button.setStyleSheet("width: 0;"
         #                                 "height: 0;"
         #                                 "border-top: 100px solid transparent;"
