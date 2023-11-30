@@ -1,7 +1,21 @@
 import sys
 from PyQt5.QtWidgets import QMainWindow, QApplication, QGridLayout, QWidget, QPushButton, QLabel
-from PyQt5.QtGui import QFont
-from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont, QPainter, QColor, QPainterPath, QBrush
+from PyQt5.QtCore import Qt, QRectF
+
+
+class StartButton(QPushButton):
+    def paintEvent(self, event):
+        p = QPainter(self)
+        path = QPainterPath()
+        rect = QRectF(0, 0, 200, 200)
+
+        path.moveTo(rect.left() + (rect.width() / 2), rect.top())
+        path.lineTo(rect.bottomLeft())
+        path.lineTo(rect.bottomRight())
+        path.lineTo(rect.left() + (rect.width() / 2), rect.top())
+
+        p.fillPath(path, QBrush(QColor("green")))
 
 
 class MainWindow(QMainWindow):
@@ -19,12 +33,12 @@ class MainWindow(QMainWindow):
         self.start_label.setFont(start_font)
         layout.addWidget(self.start_label, 0, 0, 1, 2)
 
-        self.start_button = QPushButton("Start Session", self)
-        self.start_button.setStyleSheet("width: 0;"
-                                        "height: 0;"
-                                        "border-top: 100px solid transparent;"
-                                        "border-left: 200px solid green;"
-                                        "border-bottom: 100px solid transparent;")
+        self.start_button = StartButton(self)
+        # self.start_button.setStyleSheet("width: 0;"
+        #                                 "height: 0;"
+        #                                 "border-top: 100px solid transparent;"
+        #                                 "border-left: 200px solid green;"
+        #                                 "border-bottom: 100px solid transparent;")
         layout.addWidget(self.start_button, 2, 0, 1, 2)
 
         self.widget = QWidget()
