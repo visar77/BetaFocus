@@ -8,12 +8,17 @@ class StartButton(QPushButton):
     def paintEvent(self, event):
         p = QPainter(self)
         path = QPainterPath()
-        rect = QRectF(0, 0, 200, 200)
+        rect = QRectF(0, 0, 300, 300)
 
-        path.moveTo(rect.left() + (rect.width() / 2), rect.top())
-        path.lineTo(rect.bottomLeft())
-        path.lineTo(rect.bottomRight())
-        path.lineTo(rect.left() + (rect.width() / 2), rect.top())
+        # path.moveTo(rect.left() + (rect.width() / 2), rect.top())
+        # path.lineTo(rect.bottomLeft())
+        # path.lineTo(rect.bottomRight())
+        # path.lineTo(rect.left() + (rect.width() / 2), rect.top())
+
+        path.moveTo(rect.topLeft())                 # starting top left corner
+        path.lineTo(rect.right(), rect.top() / 2)   # line to outer right corner
+        path.lineTo(rect.bottomLeft())              # line to bottom left corner
+        path.lineTo((rect.topLeft()))               # line to top left corner
 
         p.fillPath(path, QBrush(QColor("green")))
 
