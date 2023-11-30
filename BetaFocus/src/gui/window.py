@@ -5,10 +5,15 @@ from PyQt5.QtCore import Qt, QRectF
 
 
 class StartButton(QPushButton):
+
+    def __int__(self):
+        super().__init__()
+
+
     def paintEvent(self, event):
         p = QPainter(self)
         path = QPainterPath()
-        rect = QRectF(0, 0, 300, 300)
+        rect = QRectF(0, 0, self.size().width(), self.size().height())
 
         # path.moveTo(rect.left() + (rect.width() / 2), rect.top())
         # path.lineTo(rect.bottomLeft())
@@ -16,9 +21,8 @@ class StartButton(QPushButton):
         # path.lineTo(rect.left() + (rect.width() / 2), rect.top())
 
         path.moveTo(rect.topLeft())                 # starting top left corner
-        path.lineTo(rect.right(), rect.top() / 2)   # line to outer right corner
-        path.lineTo(rect.bottomLeft())              # line to bottom left corner
-        path.lineTo((rect.topLeft()))               # line to top left corner
+        path.lineTo(rect.bottomLeft())
+        path.lineTo(rect.width(), rect.height() / 2)  # line to outer right corner
 
         p.fillPath(path, QBrush(QColor("green")))
         p.drawText(rect.center(), "Start")
@@ -47,6 +51,7 @@ class MainWindow(QMainWindow):
         #                                 "border-top: 100px solid transparent;"
         #                                 "border-left: 200px solid green;"
         #                                 "border-bottom: 100px solid transparent;")
+        self.start_button.setFixedSize(400, 400)
         layout.addWidget(self.start_button, 2, 0, 1, 2)
 
         self.widget = QWidget()
