@@ -21,6 +21,7 @@ class StartButton(QPushButton):
 
         p.fillPath(path, QBrush(QColor("green")))
         p.setFont(button_font)
+        p.setPen(QColor("white"))
         p.drawText(QPoint(int(rect.width() / 3.5), int(rect.height() / 2)), "Start")
 
 
