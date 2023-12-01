@@ -63,6 +63,7 @@ void parsePayload() {
           unsigned int second_int = payload[++index];
           unsigned int third_int = payload[++index];
           waves[j] = ((first_int << 16) | (second_int << 8) | (third_int));
+          all_values[j+3] = waves[j];
           Serial.print(j);
           Serial.print("-Wave: ");
           Serial.println(waves[j]);
