@@ -1,7 +1,13 @@
 import sys
-from PyQt5.QtWidgets import QMainWindow, QApplication, QGridLayout, QWidget, QPushButton, QLabel
+from PyQt5.QtWidgets import QMainWindow, QApplication, QGridLayout, QWidget, QPushButton, QLabel, QLCDNumber
 from PyQt5.QtGui import QFont, QPainter, QColor, QPainterPath, QBrush
 from PyQt5.QtCore import Qt, QRectF, QPoint
+
+
+class TimeDisplay(QLCDNumber):
+
+    def __init__(self):
+        super(TimeDisplay, self).__init__()
 
 
 class StartButton(QPushButton):
@@ -44,11 +50,22 @@ class MainWindow(QMainWindow):
 
         self.start_button = StartButton(self)
         self.start_button.setFixedSize(300, 300)
+        # noinspection PyUnresolvedReferences
+        self.start_button.clicked.connect(self.on_click)
         layout.addWidget(self.start_button, 2, 0, 1, 2)
+
+        self.time_display = TimeDisplay()
+        layout.addWidget(self.time_display, 2, 0, 1, 2)
+        self.time_display.hide()
 
         self.widget = QWidget()
         self.widget.setLayout(layout)
         self.setCentralWidget(self.widget)
+
+    def on_click(self):
+        self.start_button.close()
+        self.time_display.show()
+
 
 
 class App(QApplication):
