@@ -2,12 +2,20 @@ import sys
 from PyQt5.QtWidgets import QMainWindow, QApplication, QGridLayout, QWidget, QPushButton, QLabel, QLCDNumber
 from PyQt5.QtGui import QFont, QPainter, QColor, QPainterPath, QBrush
 from PyQt5.QtCore import Qt, QRectF, QPoint
+from datetime import datetime
 
 
 class TimeDisplay(QLCDNumber):
 
     def __init__(self):
         super(TimeDisplay, self).__init__()
+        self.setSegmentStyle(QLCDNumber.Filled)
+        self.setDigitCount(8)
+
+    def show_time(self):
+        time = datetime.now()
+        text = time.strftime('%H:%M:%S')
+        self.display(text)
 
 
 class StartButton(QPushButton):
@@ -46,16 +54,15 @@ class MainWindow(QMainWindow):
         self.start_label = QLabel("BetaFocus", self)
         self.start_label.setFont(start_font)
         self.start_label.setStyleSheet("color: white;")
-        layout.addWidget(self.start_label, 0, 0, 1, 2)
+        layout.addWidget(self.start_label, 0, 0, 1, 1)
 
         self.start_button = StartButton(self)
         self.start_button.setFixedSize(300, 300)
-        # noinspection PyUnresolvedReferences
         self.start_button.clicked.connect(self.on_click)
-        layout.addWidget(self.start_button, 2, 0, 1, 2)
+        layout.addWidget(self.start_button, 1, 0, 1, 1)
 
         self.time_display = TimeDisplay()
-        layout.addWidget(self.time_display, 2, 0, 1, 2)
+        layout.addWidget(self.time_display, 1, 0, 1, 1)
         self.time_display.hide()
 
         self.widget = QWidget()
@@ -65,7 +72,7 @@ class MainWindow(QMainWindow):
     def on_click(self):
         self.start_button.close()
         self.time_display.show()
-
+        self.time_display.show_time()
 
 
 class App(QApplication):
