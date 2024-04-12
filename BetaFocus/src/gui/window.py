@@ -1,27 +1,56 @@
 import sys
-from PyQt5.QtWidgets import QMainWindow, QApplication, QGridLayout, QWidget, QPushButton, QLabel, QLCDNumber
-from PyQt5.QtGui import QFont, QPainter, QColor, QPainterPath, QBrush
+import threading
+from PyQt5.QtWidgets import QMainWindow, QApplication, QGridLayout, QWidget, QPushButton, QLabel
+from PyQt5.QtGui import QFont, QPainter, QColor, QPainterPath, QBrush, QWindow
 from PyQt5.QtCore import Qt, QRectF, QPoint
-from datetime import datetime
+
+from .timer import Timer
 
 
-class TimeDisplay(QLCDNumber):
+class RunWindow(QWindow):
 
     def __init__(self):
-        super(TimeDisplay, self).__init__()
-        self.setSegmentStyle(QLCDNumber.Filled)
-        self.setDigitCount(8)
+        super(RunWindow).__init__()
+        self.resize(800, 500)
+        self.setWindowTitle("BetaFocus")
+        self.setStyleSheet("background-color: black;")
+        layout = QGridLayout()
+        layout.setAlignment(Qt.AlignHCenter)
+        layout.setContentsMargins(20, 20, 20, 100)
+        start_font = QFont("Times New Roman", 60, QFont.Bold)
 
-    def show_time(self):
-        time = datetime.now()
-        text = time.strftime('%H:%M:%S')
-        self.display(text)
+        self.label = QLabel("You BetaFocus right now!", self)
+        self.label.setFont(start_font)
+        self.label.setStyleSheet("color: white;")
+        self.label.setAlignment(Qt.AlignHCenter)
+        layout.addWidget(self.label, 0, 1, 1, 1)
+
+        self.time_label = QLabel("00:00:00:00", self)
+        layout.addWidget(self.time_label, 1, 1, 1, 3)
+        self.time_label.setAlignment(Qt.AlignHCenter)
+        self.time_label.setFont(start_font)
+        self.time_label.setStyleSheet("font-size:80px;")
+
+        self.timer = Timer()
+
+        self.widget = QWidget()
+        self.widget.setLayout(layout)
+        self.setCentralWidget(self.widget)
+
+    def stopwatch(self):
+        self.timer.start(self.time_label)
+        self.time_label.setText(self.timer.format_time_string(self.timer.passed))
+
+    def start_time(self):
+        self.start_button.close()
+        self.time_label.show()
+        threading.Thread(target=self.stopwatch).start()
 
 
 class StartButton(QPushButton):
 
     def __int__(self):
-        super().__init__()
+        super(StartButton).__init__()
 
     def paintEvent(self, event):
         p = QPainter(self)
@@ -51,28 +80,20 @@ class MainWindow(QMainWindow):
         layout.setContentsMargins(20, 20, 20, 100)
         start_font = QFont("Times New Roman", 60, QFont.Bold)
 
-        self.start_label = QLabel("BetaFocus", self)
-        self.start_label.setFont(start_font)
-        self.start_label.setStyleSheet("color: white;")
-        layout.addWidget(self.start_label, 0, 0, 1, 1)
+        self.label = QLabel("BetaFocus", self)
+        self.label.setFont(start_font)
+        self.label.setStyleSheet("color: white;")
+        self.label.setAlignment(Qt.AlignHCenter)
+        layout.addWidget(self.label, 0, 1, 1, 1)
 
         self.start_button = StartButton(self)
         self.start_button.setFixedSize(300, 300)
-        self.start_button.clicked.connect(self.on_click)
-        layout.addWidget(self.start_button, 1, 0, 1, 1)
-
-        self.time_display = TimeDisplay()
-        layout.addWidget(self.time_display, 1, 0, 1, 1)
-        self.time_display.hide()
+        self.start_button.clicked.connect()
+        layout.addWidget(self.start_button, 1, 1, 1, 1)
 
         self.widget = QWidget()
         self.widget.setLayout(layout)
         self.setCentralWidget(self.widget)
-
-    def on_click(self):
-        self.start_button.close()
-        self.time_display.show()
-        self.time_display.show_time()
 
 
 class App(QApplication):
