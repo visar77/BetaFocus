@@ -43,7 +43,7 @@ void parsePayload() {
       int length = payload[++index];
       if (length != 2) {
         Serial.println("LENGTH OF RAW_VALUES WAS NOT 2!!! ERROR!!!");
-        return 0;
+        return;
       }
       short raw = (payload[index + 2] >> 8) | payload[index + 1];
       index += 2;
@@ -54,7 +54,7 @@ void parsePayload() {
       int length = payload[++index];
       if (length != 24) {
         Serial.println("LENGTH OF EEG_POWERS WAS NOT 24!!! ERROR!!!");
-        return 0;
+        return;
       }
       //Serial.print("length:");
       //Serial.println(length);
@@ -86,7 +86,7 @@ void setup() {
 
 void loop() {
 
-  // PACKAGE: SYNC SYNC PAYLOADLENGTH DATA CHECKSUM 
+  // PACKAGE: SYNC SYNC PAYLOADLENGTH DATA CHECKSUM
   // SYNC, PAYLOADLENGTH and CHECKSUM all one byte
   // SYNC = 0x44 = 170
 
@@ -121,7 +121,7 @@ void loop() {
       if (lastByte != 170 && secondLastByte == 170 && thirdLastByte == 170 && !synced) {
         if (lastByte > 170) {
           Serial.println("FAILED: PAYLOADLENGTH TOO LONG");
-        } else { 
+        } else {
           entirePackage[0] = 170; //SYNC
           entirePackage[1] = 170; //SYNC
           entirePackage[2] = lastByte;
