@@ -1,4 +1,4 @@
-from gui.window import App
+from gui.controller import App
 
 
 def main():
