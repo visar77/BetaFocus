@@ -3,6 +3,14 @@ from PyQt5.QtGui import QFont, QPainter, QColor, QPainterPath, QBrush, QIcon, QP
 from PyQt5.QtCore import Qt, QRectF, QPoint, QSize
 
 
+class ControlButton(QPushButton):
+
+    def __init__(self, text: str):
+        super(ControlButton, self).__init__()
+        self.setText(text)
+        self.setFont(QFont("Times New Roman", 30, QFont.Bold))
+
+
 class RunWindow(QWidget):
 
     def __init__(self):
@@ -21,9 +29,28 @@ class RunWindow(QWidget):
         layout.addWidget(self.label, 0, 1, 1, 1)
         # label that displays the time passed
         self.time_label = QLabel("00:00:00:00", self)
-        layout.addWidget(self.time_label, 1, 1, 1, 3)
+        layout.addWidget(self.time_label, 1, 1, 1, 1)
         self.time_label.setAlignment(Qt.AlignHCenter)
         self.time_label.setFont(QFont("Times New Roman", 125, QFont.Bold))
+        # set info button and help button
+        # TODO: entscheiden ob die da hin müssen oder hässlich sind
+        # self.info_button = MiniButton("i")
+        # self.info_button.setParent(self)
+        # layout.addWidget(self.info_button, 0, 0, 1, 1)
+        # self.help_button = MiniButton("?")
+        # self.help_button.setParent(self)
+        # layout.addWidget(self.help_button, 0, 2, 1, 1)
+        # set control buttons
+        self.stop_button = ControlButton("Stop")
+        self.stop_button.setParent(self)
+        layout.addWidget(self.stop_button, 2, 0, 1, 1)
+        self.pause_icon = QLabel(self)
+        self.pause_pixmap = QPixmap('pause.png')
+        self.pause_icon.setPixmap(self.pause_pixmap)
+        layout.addWidget(self.pause_icon, 2, 2, 1, 1)
+        self.pause_button = ControlButton("Pause")
+        self.pause_button.setParent(self)
+        layout.addWidget(self.pause_button, 2, 2, 1, 1)
         # set layout to window widget
         self.setLayout(layout)
 
