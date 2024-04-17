@@ -1,5 +1,6 @@
 import os
 import time
+from os.path import dirname as up_dir
 from datetime import datetime, timezone
 
 import serial.tools.list_ports
@@ -49,7 +50,7 @@ class Arduino:
 
     @staticmethod
     def get_available_ports():
-        return sorted(serial.tools.list_ports.comports())[0]
+        return sorted(serial.tools.list_ports.comports())
 
 
 class ArduinoConnector:
@@ -63,11 +64,12 @@ class ArduinoConnector:
         self.paused_time = 0
         self.timer_time = None
 
-    def start_session(self, time_set=6.0, path=None):
+    def start_session(self, time_set=6.0):
         date = datetime.now().strftime("%y-%m-%d_%H-%M-%S-%f")
+        # For platform independence
+        # Gives path of data folder
+        path = os.path.join(up_dir(up_dir(up_dir(os.path.realpath(__file__)))), "data")
         file_name = rf"session_{date}.csv"
-        if path is None:
-            path = "../../data"
         path = os.path.join(path, file_name)
 
         self.timer_time = time_set
@@ -89,7 +91,7 @@ class ArduinoConnector:
                 package = ";;;;;;;;;;;;"
 
             package = str(self.paused_time + time.monotonic() - self.timer_start) + ";" + package
-            # print(package)
+            print("package received: ", package)
             self.__packages.append(package)
 
             if self.paused_time + time.monotonic() - self.timer_start >= time_set:
@@ -98,6 +100,7 @@ class ArduinoConnector:
                 self.stop_session(path, file_name)
 
     def stop_session(self, path: str, file_name: str = None):
+        print(path)
         # Write a session csv
         with open(path, "w+") as f:
             f.write(
@@ -105,23 +108,35 @@ class ArduinoConnector:
             for pack in self.__packages:
                 f.write(pack + "\n")
 
+        session_csv_path = os.path.join(os.path.dirname(path), "sessions.csv")
+
         # Add to sessions.csv or create session.csv
+        if not os.path.exists(session_csv_path):
+            with open("../../data/sessions.csv", "a+") as f:
+                f.write("INDEX;DATE;FILE_NAME;TIME_SET;TIMESTAMP_OF_FIRST_VALID_PACKAGE;TIMESTAMP_OF_LAST_VALID_PACKAGE\n")
 
-        if not os.path.isfile("../../data/sessions.csv"):
-            with open("../../data/sessions.csv", "w+") as f:
-                f.write("INDEX;DATE;FILE_NAME;TIME_SET;DATE_OF_FIRST_PACKAGE;DATE_OF_LAST_PACKAGE\n")
-
-        with open("../../data/sessions.csv", "r+") as f:
-            index = f.readlines()[-1].split(";")[0]
-            if index == "INDEX":
+        with open(session_csv_path, "w+") as f:
+            lines = f.readlines()
+            if not lines:   # lines is empty
+                f.write("INDEX;DATE;FILE_NAME;TIME_SET;TIMESTAMP_OF_FIRST_VALID_PACKAGE;TIMESTAMP_OF_LAST_VALID_PACKAGE\n")
                 index = 0
             else:
-                index = int(index) + 1
+                index = lines[-1].split(";")[0]
+                if index == "INDEX":
+                    index = 0
+                else:
+                    index = int(index) + 1
 
-        with open("../../data/sessions.csv", "a+") as f:
+        with open(session_csv_path, "a+") as f:
             date = file_name[8:-4]  # cutting session_ and .csv out
-            date_of_first_package = self.__packages[0].split(";")[0]
-            date_of_last_package = self.__packages[-1].split(";")[0]
+            i = 0
+            while self.__packages[i].split(";")[1] != "" and i < len(self.__packages) - 1:
+                i += 1
+            date_of_first_package = self.__packages[i].split(";")[1]
+            i = -1
+            while self.__packages[i].split(";")[1] != "" and i > 0:
+                i -= 1
+            date_of_last_package = self.__packages[i].split(";")[1]
             f.write(f"{index};{date};{file_name};{self.timer_time};{date_of_first_package};{date_of_last_package}\n")
 
         self.__packages = []
@@ -141,3 +156,6 @@ class ArduinoConnector:
 
     def close(self):
         self.__arduino.close()
+
+ac = ArduinoConnector('COM11')
+ac.start_session(10)
