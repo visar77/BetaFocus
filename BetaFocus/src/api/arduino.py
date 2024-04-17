@@ -100,7 +100,8 @@ class ArduinoConnector:
     def stop_session(self, path: str, file_name: str = None):
         # Write a session csv
         with open(path, "w+") as f:
-            f.write("TIMERTIME;TIMESTAMP;POOR_SIGNAL_QUALITY;ATTENTION;MEDITATION;DELTA;THETA;LOW ALPHA;HIGH ALPHA;LOW BETA;HIGH BETA;LOW GAMMA; HIGH GAMMA;RAW WAVE DATA\n")
+            f.write(
+                "TIMERTIME;TIMESTAMP;POOR_SIGNAL_QUALITY;ATTENTION;MEDITATION;DELTA;THETA;LOW ALPHA;HIGH ALPHA;LOW BETA;HIGH BETA;LOW GAMMA; HIGH GAMMA;RAW WAVE DATA\n")
             for pack in self.__packages:
                 f.write(pack + "\n")
 
@@ -118,7 +119,7 @@ class ArduinoConnector:
                 index = int(index) + 1
 
         with open("../../data/sessions.csv", "a+") as f:
-            date = file_name[8:-4]   # cutting session_ and .csv out
+            date = file_name[8:-4]  # cutting session_ and .csv out
             date_of_first_package = self.__packages[0].split(";")[0]
             date_of_last_package = self.__packages[-1].split(";")[0]
             f.write(f"{index};{date};{file_name};{self.timer_time};{date_of_first_package};{date_of_last_package}\n")
@@ -140,19 +141,3 @@ class ArduinoConnector:
 
     def close(self):
         self.__arduino.close()
-
-
-from threading import Thread
-from time import sleep
-ac = ArduinoConnector('COM12')
-
-def threaded_function():
-    sleep(10)
-    ac.pause_session()
-    sleep(10)
-    ac.resume_session()
-
-
-thread = Thread(target = threaded_function)
-thread.start()
-ac.start_session(time_set=30)
