@@ -1,4 +1,7 @@
-from PyQt5.QtWidgets import QMainWindow, QGridLayout, QWidget, QPushButton, QLabel, QDesktopWidget, QVBoxLayout
+import sys
+
+from PyQt5.QtWidgets import QMainWindow, QGridLayout, QWidget, QPushButton, QLabel, QDesktopWidget, QVBoxLayout, \
+    QApplication
 from PyQt5.QtGui import QFont, QPainter, QColor, QPainterPath, QBrush, QIcon, QPixmap
 from PyQt5.QtCore import Qt, QRectF, QPoint, QSize
 
@@ -15,8 +18,9 @@ class RunWindow(QWidget):
 
     def __init__(self):
         super(RunWindow, self).__init__()
-        self.resize(900, 600)
+        self.setFixedSize(900, 600)
         self.center()
+        self.setWindowTitle("BetaFocus")
         self.setStyleSheet("background-color: black;")
         layout = QGridLayout()
         layout.setAlignment(Qt.AlignHCenter)
@@ -89,9 +93,9 @@ class StatsButton(QPushButton):
                            "border-color: white;"
                            "min-width: 15em;"
                            "padding: 6px;")
-        pic = QPixmap("stats.png")
+        pic = QPixmap("./gui/stats.png")
         self.setIcon(QIcon(pic))
-        self.setIconSize(QSize(5, 5))
+        self.setIconSize(QSize(20, 20))
 
 
 class StartButton(QPushButton):
@@ -123,7 +127,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super(MainWindow, self).__init__()
-        self.resize(900, 600)
+        self.setFixedSize(900, 600)
         self.center()
         self.setWindowTitle("BetaFocus")
         self.setStyleSheet("background-color: black;")
@@ -184,3 +188,10 @@ class MainWindow(QMainWindow):
         box.setContentsMargins(0, 60, 0, 20)
         widget.setLayout(box)
         return widget
+
+
+class App(QApplication):
+
+    def __init__(self):
+        super().__init__(sys.argv)
+        self.mainWindow = MainWindow()

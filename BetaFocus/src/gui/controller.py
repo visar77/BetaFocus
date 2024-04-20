@@ -1,27 +1,20 @@
-import sys
 import threading
+from PyQt5.QtWidgets import QMainWindow
 
-from PyQt5.QtWidgets import QApplication
-
-from .view import MainWindow
 from .timer import Timer
 
 
-class App(QApplication):
+class Controller:
 
-    def __init__(self):
-        super().__init__(sys.argv)
-        self.mainWindow = MainWindow()
+    def __init__(self, mainWindow: QMainWindow):
+        self.mainWindow = mainWindow
         self.runWindow = self.mainWindow.run_window
-        self.mainWindow.show()
         # main window components
         self.start_button = self.mainWindow.start_button
         self.start_button.clicked.connect(self.start_session)
         # run window components
         self.time_label = self.runWindow.time_label
         self.timer = Timer()
-        # run gui
-        self.exec_()
 
     def stopwatch(self):
         """
