@@ -42,7 +42,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 ### Acknowledgements
 The main inspiration for this project was the Frontier Nerds' blog about hacking EEG toys: https://frontiernerds.com/brain-hack. 
-It's a wonderful read, easy and gives a lot of insight.
+It's a wonderful read, easy to follow and gives a lot of insight.
 It's written by Eric Mika, a NYU alumni and current Creative Director of Local Projects (https://www.linkedin.com/in/emika/). <br>
 His Arduino Brain Library https://github.com/kitschpatrol/Brain also reads NeuroSky-EEG-Headsets and can be combined with BrainGrapher https://github.com/kitschpatrol/BrainGrapher to visualize the read values. <br>
 Thanks to Eric, we came up with this idea and expanded upon his hack.
