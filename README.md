@@ -3,7 +3,7 @@
 [![de](https://img.shields.io/badge/lang-de-red.svg)](https://github.com/visar77/BetaFocus/blob/main/README.de.md)
 
 ## About
-This README was written in German and English. If you want to see the German version, click on the "lang|de" under the "BetaFocus" title.
+This README was written in German and English. If you want to see the German version, click [hier](https://github.com/visar77/BetaFocus/blob/main/README.de.md) or click the badge under the title.
 
 ## Usage
 
