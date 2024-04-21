@@ -6,8 +6,8 @@
 
 ## Bedienung
 
-### Lizenzen von genutzten Komponenten bzw. Software-Bibliotheken
-#### Adafruit GFX and SSD1306 library
+## Lizenzen von genutzten Komponenten bzw. Software-Bibliotheken
+### Adafruit GFX and SSD1306 library
 Ein besonderer Dank geht an die wunderbare Limor Fried (Ladyada) für die Bereitstellung der Open-Source-Software zur Steuerung von i2c- und spi-Minidisplays.
 ```
 Software License Agreement (BSD License)
@@ -37,7 +37,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
-### Danksagungen und Anerkennungen
+## Danksagungen und Anerkennungen
 Die Hauptinspiration für dieses Projekt war der Blog von Frontier Nerds, wo das Hacken von EEG-Spielzeug gezeigt wird: https://frontiernerds.com/brain-hack. 
 Es ist verständlich geschrieben, einfach zu lesen und erklärt die Funktionsweise des NeuroSky-Moduls auch sehr gut.
 Der Blog-Post wurde von Eric Mika geschrieben, einem NYU-Absolventen und derzeitigen Kreativdirektor von Local Projects (https://www.linkedin.com/in/emika/). <br>

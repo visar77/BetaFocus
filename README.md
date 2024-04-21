@@ -8,8 +8,8 @@ This README was written in German and English. If you want to see the German ver
 ## Usage
 
 
-### Licenses of Components / Used Libraries
-#### Adafruit GFX and SSD1306 library
+## Licenses of Components / Used Libraries
+### Adafruit GFX and SSD1306 library
 
 Specifically thanks to the wonderful Limor Fried (Ladyada) for providing the open source software to control i2c and spi mini-displays.
 ```
@@ -40,7 +40,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
-### Acknowledgements
+## Acknowledgements
 The main inspiration for this project was the Frontier Nerds' blog about hacking EEG toys: https://frontiernerds.com/brain-hack. 
 It's a wonderful read, easy to follow and gives a lot of insight.
 It's written by Eric Mika, a NYU alumni and current Creative Director of Local Projects (https://www.linkedin.com/in/emika/). <br>
