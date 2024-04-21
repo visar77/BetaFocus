@@ -1,16 +1,13 @@
 # BetaFocus
-[![de](https://img.shields.io/badge/lang-de-red.svg)](https://github.com/visar77/BetaFocus/blob/main/README.de.md)
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/visar77/BetaFocus/blob/main/README.md)
 
-## About
-This README was written in German and English. If you want to see the German version, click on the "lang|de" under the "BetaFocus" title.
+## Informationen
 
-## Usage
+## Bedienung
 
-
-### Licenses of Components / Used Libraries
+### Lizenzen von genutzten Komponenten bzw. Software-Bibliotheken
 #### Adafruit GFX and SSD1306 library
-
-Specifically thanks to the wonderful Limor Fried (Ladyada) for providing the open source software to control i2c and spi mini-displays.
+Ein besonderer Dank geht an die wunderbare Limor Fried (Ladyada) für die Bereitstellung der Open-Source-Software zur Steuerung von i2c- und spi-Minidisplays.
 ```
 Software License Agreement (BSD License)
 
@@ -39,9 +36,9 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
-### Acknowledgements
-The main inspiration for this project was the Frontier Nerds' blog about hacking EEG toys: https://frontiernerds.com/brain-hack. 
-It's a wonderful read, easy and gives a lot of insight.
-It's written by Eric Mika, a NYU alumni and current Creative Director of Local Projects (https://www.linkedin.com/in/emika/). <br>
-His Arduino Brain Library https://github.com/kitschpatrol/Brain also reads NeuroSky-EEG-Headsets and can be combined with BrainGrapher https://github.com/kitschpatrol/BrainGrapher to visualize the read values. <br>
-Thanks to Eric, we came up with this idea and expanded upon his hack.
+### Danksagungen und Anerkennungen
+Die Hauptinspiration für dieses Projekt war der Blog von Frontier Nerds, wo das Hacken von EEG-Spielzeug gezeigt wird: https://frontiernerds.com/brain-hack. 
+Es ist verständlich geschrieben, einfach zu lesen und erklärt die Funktionsweise des NeuroSky-Moduls auch sehr gut.
+Der Blog-Post wurde von Eric Mika geschrieben, einem NYU-Absolventen und derzeitigen Kreativdirektor von Local Projects (https://www.linkedin.com/in/emika/). <br>
+Seine Arduino Brain Library https://github.com/kitschpatrol/Brain liest empfangene Pakete vom NeuroSky-EEG-Headsets auch aus und kann in Kombination mit BrainGrapher https://github.com/kitschpatrol/BrainGrapher die empfangenen Werte visualisieren. <br>
+Dank Eric sind wir erst auf diese Idee gekommen und haben auf seinen Hack aufgebaut und diesen erweitert.
