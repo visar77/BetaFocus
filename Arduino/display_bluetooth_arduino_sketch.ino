@@ -116,7 +116,9 @@ void draw() {
   display.print(F("QLTY:"));
 
   display.setCursor(SCREEN_WIDTH/4 +2, GRAPH_HEIGHT+2);
-  display.print(quality); //Replace with Signal Quality
+
+  if (quality == 255) display.print(F("-")); //Replace with Signal Quality
+  else display.print(quality);
 
   display.setCursor(SCREEN_WIDTH/2 +3, GRAPH_HEIGHT+2);
   display.print(F("ATTN:"));
@@ -274,7 +276,7 @@ int readPackage() {
 
 void setup() {
   Serial.begin(9600);
-  SerialBT.begin(9600);
+  SerialBT.begin("BetaFocus Device", false);
 
   if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
     Serial.println("SSD1306 allocation failed");
