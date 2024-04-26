@@ -5,19 +5,20 @@ from PyQt5.QtWidgets import QLabel
 
 class Timer:
 
-    def __init__(self):
+    def __init__(self, time_label: QLabel):
         self.running: bool = False
         self.started: bool = False
         self.passed: float = 0
+        self.time_label = time_label
 
-    def start(self, time_label: QLabel):
+    def start(self):
         self.running = True
-        self.count(time_label)
+        self.count()
 
     def stop(self):
         self.running = False
 
-    def count(self, time_label: QLabel):
+    def count(self):
         start = time.time()
         if self.started:
             until_now: float = self.passed
@@ -25,10 +26,10 @@ class Timer:
             until_now: float = 0
         while self.running:
             self.passed = time.time() - start + until_now
-            time_label.setText(self.format_time_string(self.passed))
+            self.time_label.setText(self.format_time_string())
 
-    def format_time_string(self, time_passed: float) -> str:
-        secs: float = time_passed % 60
-        mins: float = time_passed // 60
+    def format_time_string(self) -> str:
+        secs: float = self.passed % 60
+        mins: float = self.passed // 60
         hours: float = mins // 60
         return f"{int(hours):02d}:{int(mins):02d}:{int(secs):02d}:{int((self.passed % 1) * 100):02d}"

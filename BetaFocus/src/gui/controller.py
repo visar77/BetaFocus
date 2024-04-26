@@ -14,15 +14,7 @@ class Controller:
         self.start_button.clicked.connect(self.start_session)
         # run window components
         self.time_label = self.runWindow.time_label
-        self.timer = Timer()
-
-    def stopwatch(self):
-        """
-        starts the actual timer;
-        gives stopwatch functionality to the time label of the run window
-        """
-        self.timer.start(self.time_label)
-        self.time_label.setText(self.timer.format_time_string(self.timer.passed))
+        self.timer = Timer(self.time_label)
 
     def start_session(self):
         """
@@ -31,4 +23,4 @@ class Controller:
         """
         self.runWindow.show()
         self.start_button.setEnabled(False)
-        threading.Thread(target=self.stopwatch).start()
+        threading.Thread(target=self.timer.start).start()

@@ -12,10 +12,9 @@ class ControlButton(QPushButton):
 
     def __init__(self, url: str):
         super(ControlButton, self).__init__()
-        # self.setText(text)
-        self.setFont(QFont("Times New Roman", 30, QFont.Bold))
+        self.setMinimumSize(QSize(120, 120))
         self.setStyleSheet(f"image: url({url});"
-                           "padding-bottom: 30px;")
+                           "padding: 25px;")
 
 
 class RunWindow(QWidget):
@@ -31,8 +30,7 @@ class RunWindow(QWidget):
         layout.setContentsMargins(20, 40, 20, 20)
         # label at the top of the window
         self.label = QLabel("You BetaFocus right now!", self)
-        self.label.setFont(QFont("Times New Roman", 60, QFont.Bold))
-        self.label.setStyleSheet("color: white;")
+        self.label.setFont(QFont("Times New Roman", 55, QFont.Bold))
         self.label.setAlignment(Qt.AlignHCenter)
         layout.addWidget(self.label, 0, 1, 1, 1)
         # label that displays the time passed
@@ -44,10 +42,6 @@ class RunWindow(QWidget):
         self.stop_button = ControlButton("./gui/images/stop.png")
         self.stop_button.setParent(self)
         layout.addWidget(self.stop_button, 2, 0, 1, 1)
-        self.pause_icon = QLabel(self)
-        self.pause_pixmap = QPixmap('pause.png')
-        self.pause_icon.setPixmap(self.pause_pixmap)
-        layout.addWidget(self.pause_icon, 2, 2, 1, 1)
         self.pause_button = ControlButton("./gui/images/pause.png")
         self.pause_button.setParent(self)
         layout.addWidget(self.pause_button, 2, 2, 1, 1)
