@@ -10,11 +10,12 @@ from .mainwindow import Ui_MainWindow
 
 class ControlButton(QPushButton):
 
-    def __init__(self, text: str, url: str):
+    def __init__(self, url: str):
         super(ControlButton, self).__init__()
         # self.setText(text)
         self.setFont(QFont("Times New Roman", 30, QFont.Bold))
-        self.setStyleSheet(f"image: url({url});")
+        self.setStyleSheet(f"image: url({url});"
+                           "padding-bottom: 30px;")
 
 
 class RunWindow(QWidget):
@@ -27,7 +28,7 @@ class RunWindow(QWidget):
         self.setStyleSheet("background-color: black;")
         layout = QGridLayout()
         layout.setAlignment(Qt.AlignHCenter)
-        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setContentsMargins(20, 40, 20, 20)
         # label at the top of the window
         self.label = QLabel("You BetaFocus right now!", self)
         self.label.setFont(QFont("Times New Roman", 60, QFont.Bold))
@@ -39,23 +40,15 @@ class RunWindow(QWidget):
         layout.addWidget(self.time_label, 1, 1, 1, 1)
         self.time_label.setAlignment(Qt.AlignHCenter)
         self.time_label.setFont(QFont("Times New Roman", 125, QFont.Bold))
-        # set info button and help button
-        # TODO: entscheiden ob die da hin müssen oder hässlich sind
-        # self.info_button = MiniButton("i")
-        # self.info_button.setParent(self)
-        # layout.addWidget(self.info_button, 0, 0, 1, 1)
-        # self.help_button = MiniButton("?")
-        # self.help_button.setParent(self)
-        # layout.addWidget(self.help_button, 0, 2, 1, 1)
         # set control buttons
-        self.stop_button = ControlButton("Stop", "./gui/images/stop.png")
+        self.stop_button = ControlButton("./gui/images/stop.png")
         self.stop_button.setParent(self)
         layout.addWidget(self.stop_button, 2, 0, 1, 1)
         self.pause_icon = QLabel(self)
         self.pause_pixmap = QPixmap('pause.png')
         self.pause_icon.setPixmap(self.pause_pixmap)
         layout.addWidget(self.pause_icon, 2, 2, 1, 1)
-        self.pause_button = ControlButton("Pause", "./gui/images/pause.png")
+        self.pause_button = ControlButton("./gui/images/pause.png")
         self.pause_button.setParent(self)
         layout.addWidget(self.pause_button, 2, 2, 1, 1)
         # set layout to window widget
