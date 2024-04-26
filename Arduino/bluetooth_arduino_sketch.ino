@@ -86,7 +86,7 @@ void parsePayload() {
 
 void setup() {
   Serial.begin(9600);
-  SerialBT.begin(9600);
+  SerialBT.begin("BetaFocus Device", false);
 }
 
 void loop() {
