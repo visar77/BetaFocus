@@ -15,8 +15,13 @@ class Timer:
         self.running = True
         self.count()
 
+    def pause(self):
+        self.running = False
+
     def stop(self):
         self.running = False
+        self.started = False
+        self.passed = 0
 
     def count(self):
         start = time.time()

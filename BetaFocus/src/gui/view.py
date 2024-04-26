@@ -13,6 +13,9 @@ class ControlButton(QPushButton):
     def __init__(self, url: str):
         super(ControlButton, self).__init__()
         self.setMinimumSize(QSize(120, 120))
+        self.set_icon(url)
+
+    def set_icon(self, url: str):
         self.setStyleSheet(f"image: url({url});"
                            "padding: 25px;")
 
