@@ -2,16 +2,19 @@ import sys
 
 from PyQt5.QtWidgets import QMainWindow, QGridLayout, QWidget, QPushButton, QLabel, QDesktopWidget, QVBoxLayout, \
     QApplication
-from PyQt5.QtGui import QFont, QPainter, QColor, QPainterPath, QBrush, QIcon, QPixmap
-from PyQt5.QtCore import Qt, QRectF, QPoint, QSize
+from PyQt5.QtGui import QFont, QIcon, QPixmap
+from PyQt5.QtCore import Qt, QSize
+
+from .mainwindow import Ui_MainWindow
 
 
 class ControlButton(QPushButton):
 
-    def __init__(self, text: str):
+    def __init__(self, text: str, url: str):
         super(ControlButton, self).__init__()
-        self.setText(text)
+        # self.setText(text)
         self.setFont(QFont("Times New Roman", 30, QFont.Bold))
+        self.setStyleSheet(f"image: url({url});")
 
 
 class RunWindow(QWidget):
@@ -45,14 +48,14 @@ class RunWindow(QWidget):
         # self.help_button.setParent(self)
         # layout.addWidget(self.help_button, 0, 2, 1, 1)
         # set control buttons
-        self.stop_button = ControlButton("Stop")
+        self.stop_button = ControlButton("Stop", "./gui/images/stop.png")
         self.stop_button.setParent(self)
         layout.addWidget(self.stop_button, 2, 0, 1, 1)
         self.pause_icon = QLabel(self)
         self.pause_pixmap = QPixmap('pause.png')
         self.pause_icon.setPixmap(self.pause_pixmap)
         layout.addWidget(self.pause_icon, 2, 2, 1, 1)
-        self.pause_button = ControlButton("Pause")
+        self.pause_button = ControlButton("Pause", "./gui/images/pause.png")
         self.pause_button.setParent(self)
         layout.addWidget(self.pause_button, 2, 2, 1, 1)
         # set layout to window widget
@@ -69,101 +72,49 @@ class RunWindow(QWidget):
         self.move(qr.topLeft())
 
 
-class MiniButton(QPushButton):
-
-    def __init__(self, character: str):
-        super(MiniButton, self).__init__()
-        self.setFixedSize(20, 20)
-        self.setText(character)
-        self.setStyleSheet("border-style: outset;"
-                           "border-width: 2px;"
-                           "border-radius: 10px;"
-                           "border-color: white;"
-                           "padding: 2px;")
-
-
-class StatsButton(QPushButton):
-
-    def __init__(self):
-        super(StatsButton, self).__init__()
-        self.setText("Statistiken")
-        self.setStyleSheet("border-style: outset;"
-                           "border-width: 2px;"
-                           "border-radius: 10px;"
-                           "border-color: white;"
-                           "min-width: 15em;"
-                           "padding: 6px;")
-        pic = QPixmap("./gui/stats.png")
-        self.setIcon(QIcon(pic))
-        self.setIconSize(QSize(20, 20))
-
-
-class StartButton(QPushButton):
-
-    def __init__(self):
-        super(StartButton, self).__init__()
-        self.setFixedSize(250, 250)
-
-    def paintEvent(self, event):
-        """
-        overriding the pushbutton class' paint event to create triangular shape
-        """
-        p = QPainter(self)
-        path = QPainterPath()
-        rect = QRectF(0, 0, self.size().width(), self.size().height())
-        button_font = QFont("Times New Roman", 30)
-        # drawing triangular shape
-        path.moveTo(rect.topLeft())                     # starting top left corner
-        path.lineTo(rect.bottomLeft())                  # line to bottom left corner
-        path.lineTo(rect.width(), rect.height() / 2)    # line to outer right corner
-        # filling with color and positioning text
-        p.fillPath(path, QBrush(QColor("green")))
-        p.setFont(button_font)
-        p.setPen(QColor("white"))
-        p.drawText(QPoint(int(rect.width() / 3.5), int(rect.height() / 2)), "Start")
-
-
 class MainWindow(QMainWindow):
 
     def __init__(self):
         super(MainWindow, self).__init__()
-        self.setFixedSize(900, 600)
+        self.mainWindow_ui = Ui_MainWindow()
+        self.mainWindow_ui.setupUi(self)
         self.center()
         self.setWindowTitle("BetaFocus")
         self.setStyleSheet("background-color: black;")
-        layout = QGridLayout()
-        layout.setContentsMargins(20, 20, 20, 20)
-        big_font = QFont("Times New Roman", 60, QFont.Bold)
-        normal_font = QFont("Times New Roman", 30)
-        # Main window's "BetaFocus" label
-        self.label = QLabel("BetaFocus", self)
-        self.label.setFont(big_font)
-        self.label.setStyleSheet("color: white;")
-        self.label.setAlignment(Qt.AlignCenter)
-        layout.addWidget(self.label, 0, 1, 1, 1)
-        # triangular start button
-        self.start_button = StartButton()
-        self.start_button.setParent(self)
-        layout.addWidget(self.center_widget(self.start_button), 1, 1, 1, 1)
-        # statistics button at the bottom
-        self.stats_button = StatsButton()
-        self.stats_button.setParent(self)
-        self.stats_button.setFont(normal_font)
-        layout.addWidget(self.center_widget(self.stats_button), 2, 1, 1, 1)
-        # information button in the top left corner
-        self.info_button = MiniButton("i")
-        self.info_button.setParent(self)
-        layout.addWidget(self.info_button, 0, 0, 1, 1)
-        # help button in the top right corner
-        self.help_button = MiniButton("?")
-        self.help_button.setParent(self)
-        layout.addWidget(self.help_button, 0, 2, 1, 1)
-        # other windows are widgets and children of the main window
+        # # triangular start button
+        self.start_button = self.mainWindow_ui.start_button
+        self.start_button.setStyleSheet("image: url(./gui/images/start.png);"
+                                        "padding-left: 30px;"
+                                        "padding-top: 20px;"
+                                        "padding-bottom: 50px;"
+                                        "text-align: center;")
+        # # statistics button at the bottom
+        self.stats_button = self.mainWindow_ui.stats_button
+        self.stats_button.setStyleSheet("border-style: outset;"
+                                        "border-width: 2px;"
+                                        "border-radius: 10px;"
+                                        "border-color: white;"
+                                        "min-width: 15em;")
+        self.stats_button.setContentsMargins(0, 30, 0, 10)
+        pic = QPixmap("./gui/images/stats.png")
+        self.stats_button.setIcon(QIcon(pic))
+        self.stats_button.setIconSize(QSize(20, 20))
+        # # information button in the top left corner
+        self.info_button = self.mainWindow_ui.info_button
+        self.info_button.setStyleSheet("border-style: outset;"
+                                       "border-width: 2px;"
+                                       "border-radius: 10px;"
+                                       "border-color: white;"
+                                       "padding: 7px;")
+        # # help button in the top right corner
+        self.help_button = self.mainWindow_ui.help_button
+        self.help_button.setStyleSheet("border-style: outset;"
+                                       "border-width: 2px;"
+                                       "border-radius: 15px;"
+                                       "border-color: white;"
+                                       "padding: 7px;")
+        # # other windows are widgets and children of the main window
         self.run_window = RunWindow()
-        # set layout to main window
-        self.widget = QWidget()
-        self.widget.setLayout(layout)
-        self.setCentralWidget(self.widget)
 
     def center(self):
         """
