@@ -5,7 +5,29 @@ from PyQt5.QtWidgets import QMainWindow, QGridLayout, QWidget, QPushButton, QLab
 from PyQt5.QtGui import QFont, QIcon, QPixmap
 from PyQt5.QtCore import Qt, QSize
 
-from .mainwindow import Ui_MainWindow
+from BetaFocus.BetaFocus.src.gui.uis.ui_mainwindow import Ui_MainWindow
+
+
+class StatsWindow(QWidget):
+    def __init__(self):
+        super(StatsWindow, self).__init__()
+        self.setFixedSize(920, 620)
+        self.center()
+        self.setWindowTitle("BetaFocus")
+        self.setStyleSheet("background-color: black;")
+        layout = QGridLayout()
+        layout.setAlignment(Qt.AlignHCenter)
+        layout.setContentsMargins(20, 40, 20, 20)
+
+    def center(self):
+        """
+        centers the main window according to the desktop size of the device used
+        """
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        # top left of rectangle becomes top left of window centering it
+        self.move(qr.topLeft())
 
 
 class ControlButton(QPushButton):
@@ -13,9 +35,6 @@ class ControlButton(QPushButton):
     def __init__(self, url: str):
         super(ControlButton, self).__init__()
         self.setMinimumSize(QSize(120, 120))
-        self.set_icon(url)
-
-    def set_icon(self, url: str):
         self.setStyleSheet(f"image: url({url});"
                            "padding: 25px;")
 
@@ -24,7 +43,7 @@ class RunWindow(QWidget):
 
     def __init__(self):
         super(RunWindow, self).__init__()
-        self.setFixedSize(900, 600)
+        self.setFixedSize(920, 620)
         self.center()
         self.setWindowTitle("BetaFocus")
         self.setStyleSheet("background-color: black;")
@@ -48,6 +67,10 @@ class RunWindow(QWidget):
         self.pause_button = ControlButton("./gui/images/pause.png")
         self.pause_button.setParent(self)
         layout.addWidget(self.pause_button, 2, 2, 1, 1)
+        self.resume_button = ControlButton("./gui/images/start.png")
+        self.resume_button.setParent(self)
+        layout.addWidget(self.resume_button, 2, 2, 1, 1)
+        self.resume_button.hide()
         # set layout to window widget
         self.setLayout(layout)
 
@@ -69,42 +92,21 @@ class MainWindow(QMainWindow):
         self.mainWindow_ui = Ui_MainWindow()
         self.mainWindow_ui.setupUi(self)
         self.center()
-        self.setWindowTitle("BetaFocus")
-        self.setStyleSheet("background-color: black;")
         # # triangular start button
         self.start_button = self.mainWindow_ui.start_button
-        self.start_button.setStyleSheet("image: url(./gui/images/start.png);"
-                                        "padding-left: 30px;"
-                                        "padding-top: 20px;"
-                                        "padding-bottom: 50px;"
-                                        "text-align: center;")
         # # statistics button at the bottom
         self.stats_button = self.mainWindow_ui.stats_button
-        self.stats_button.setStyleSheet("border-style: outset;"
-                                        "border-width: 2px;"
-                                        "border-radius: 10px;"
-                                        "border-color: white;"
-                                        "min-width: 15em;")
         self.stats_button.setContentsMargins(0, 30, 0, 10)
         pic = QPixmap("./gui/images/stats.png")
         self.stats_button.setIcon(QIcon(pic))
         self.stats_button.setIconSize(QSize(20, 20))
         # # information button in the top left corner
         self.info_button = self.mainWindow_ui.info_button
-        self.info_button.setStyleSheet("border-style: outset;"
-                                       "border-width: 2px;"
-                                       "border-radius: 10px;"
-                                       "border-color: white;"
-                                       "padding: 7px;")
         # # help button in the top right corner
         self.help_button = self.mainWindow_ui.help_button
-        self.help_button.setStyleSheet("border-style: outset;"
-                                       "border-width: 2px;"
-                                       "border-radius: 15px;"
-                                       "border-color: white;"
-                                       "padding: 7px;")
-        # # other windows are widgets and children of the main window
+        # other windows are widgets and children of the main window
         self.run_window = RunWindow()
+        self.stats_window = StatsWindow()
 
     def center(self):
         """
