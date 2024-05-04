@@ -86,13 +86,13 @@ class Ui_MainWindow(object):
         self.start_button.setObjectName(u"start_button")
         sizePolicy.setHeightForWidth(self.start_button.sizePolicy().hasHeightForWidth())
         self.start_button.setSizePolicy(sizePolicy)
-        self.start_button.setMinimumSize(QSize(250, 250))
-        self.start_button.setMaximumSize(QSize(250, 250))
+        self.start_button.setMinimumSize(QSize(300, 300))
+        self.start_button.setMaximumSize(QSize(300, 300))
         font1 = QFont()
         font1.setPointSize(25)
         self.start_button.setFont(font1)
-        self.start_button.setStyleSheet(u"image: url(.gui/images/start.png);\n"
-"padding-left: 30px;\n"
+        self.start_button.setStyleSheet(u"image: url(./gui/images/start.png);\n"
+"padding-left: 20px;\n"
 "padding-top: 20px;\n"
 "padding-bottom: 50px;\n"
 "text-align: center;\n"
@@ -100,21 +100,21 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.start_button, 1, 2, 1, 1)
 
-        self.pushButton = QPushButton(self.layoutWidget)
-        self.pushButton.setObjectName(u"pushButton")
-        sizePolicy.setHeightForWidth(self.pushButton.sizePolicy().hasHeightForWidth())
-        self.pushButton.setSizePolicy(sizePolicy)
-        self.pushButton.setMinimumSize(QSize(244, 75))
-        self.pushButton.setMaximumSize(QSize(250, 75))
-        self.pushButton.setFont(font1)
-        self.pushButton.setStyleSheet(u"border-style: outset;\n"
+        self.connect_button = QPushButton(self.layoutWidget)
+        self.connect_button.setObjectName(u"pushButton")
+        sizePolicy.setHeightForWidth(self.connect_button.sizePolicy().hasHeightForWidth())
+        self.connect_button.setSizePolicy(sizePolicy)
+        self.connect_button.setMinimumSize(QSize(244, 75))
+        self.connect_button.setMaximumSize(QSize(250, 75))
+        self.connect_button.setFont(font1)
+        self.connect_button.setStyleSheet(u"border-style: outset;\n"
 "border-width: 2px;\n"
 "border-radius: 10px;\n"
 "border-color: white;\n"
 "min-width:15em;\n"
 "color: white;")
 
-        self.gridLayout.addWidget(self.pushButton, 2, 1, 1, 1)
+        self.gridLayout.addWidget(self.connect_button, 2, 1, 1, 1)
 
         self.stats_button = QPushButton(self.layoutWidget)
         self.stats_button.setObjectName(u"stats_button")
@@ -157,8 +157,8 @@ class Ui_MainWindow(object):
         self.help_button.setToolTip(QCoreApplication.translate("MainWindow", u"Hilfe", None))
 #endif // QT_CONFIG(tooltip)
         self.help_button.setText(QCoreApplication.translate("MainWindow", u"?", None))
-        self.start_button.setText(QCoreApplication.translate("MainWindow", u"Los geht's!", None))
-        self.pushButton.setText(QCoreApplication.translate("MainWindow", u"Verbinden", None))
+        self.start_button.setText(QCoreApplication.translate("MainWindow", u"Los geht's!\t\t\t\t\t\t", None))
+        self.connect_button.setText(QCoreApplication.translate("MainWindow", u"Verbinden", None))
         self.stats_button.setText(QCoreApplication.translate("MainWindow", u"Statistiken", None))
     # retranslateUi
 
