@@ -2,7 +2,7 @@ import sys
 
 from PyQt5.QtWidgets import QMainWindow, QGridLayout, QWidget, QPushButton, QLabel, QDesktopWidget, QVBoxLayout, \
     QApplication
-from PyQt5.QtGui import QFont, QIcon, QPixmap
+from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import Qt, QSize
 
 from BetaFocus.BetaFocus.src.gui.ui.ui_mainwindow import Ui_MainWindow
