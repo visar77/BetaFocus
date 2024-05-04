@@ -9,6 +9,30 @@ from BetaFocus.BetaFocus.src.gui.ui.ui_mainwindow import Ui_MainWindow
 from BetaFocus.BetaFocus.src.gui.ui.ui_runwindow import Ui_RunWindow
 
 
+class HelpWindow(QWidget):
+
+    def __init__(self):
+        super(HelpWindow, self).__init__()
+        self.setFixedSize(920, 620)
+        self.setWindowTitle("BetaFocus")
+        self.setStyleSheet("background-color: black;")
+        layout = QGridLayout()
+        layout.setAlignment(Qt.AlignHCenter)
+        layout.setContentsMargins(20, 40, 20, 20)
+
+
+class InfoWindow(QWidget):
+
+    def __init__(self):
+        super(InfoWindow, self).__init__()
+        self.setFixedSize(920, 620)
+        self.setWindowTitle("BetaFocus")
+        self.setStyleSheet("background-color: black;")
+        layout = QGridLayout()
+        layout.setAlignment(Qt.AlignHCenter)
+        layout.setContentsMargins(20, 40, 20, 20)
+
+
 class StatsWindow(QWidget):
     def __init__(self):
         super(StatsWindow, self).__init__()
@@ -83,6 +107,7 @@ class MainWindow(QMainWindow):
         # other windows are widgets and children of the main window
         self.run_window = RunWindow()
         self.stats_window = StatsWindow()
+        self.info_window = InfoWindow()
 
     def center(self):
         """
