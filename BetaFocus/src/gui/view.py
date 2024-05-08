@@ -5,8 +5,8 @@ from PyQt5.QtWidgets import QMainWindow, QGridLayout, QWidget, QPushButton, QLab
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import Qt, QSize
 
-from BetaFocus.BetaFocus.src.gui.ui.ui_mainwindow import Ui_MainWindow
-from BetaFocus.BetaFocus.src.gui.ui.ui_runwindow import Ui_RunWindow
+from .ui.ui_mainwindow import Ui_MainWindow
+from .ui.ui_runwindow import Ui_RunWindow
 
 
 class HelpWindow(QWidget):
