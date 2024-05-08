@@ -32,8 +32,8 @@ void parsePayload() {
     }
     int code = payload[index];
     if (code == 0x02) {
-      SerialBT.print("SIGNAL_QUALITY (0-200): ");
-      all_values[0] = payload[++index];
+      SerialBT.print("SIGNAL_QUALITY (0-100): ");
+      all_values[0] = (200 - payload[++index]) / 2;
       SerialBT.println(all_values[0]);
     } else if (code == 0x04) {
       SerialBT.print("ATTENTION (0 to 100): ");
@@ -68,7 +68,14 @@ void parsePayload() {
           unsigned int third_int = payload[++index];
           waves[j] = ((first_int << 16) | (second_int << 8) | (third_int));
           all_values[j+3] = waves[j];
-          SerialBT.print(j);
+          if (j == 0) Serial.print("Delta");
+          else if (j == 1) Serial.print("Theta");
+          else if (j == 2) Serial.print("Low-Alpha");
+          else if (j == 3) Serial.print("High-Alpha");
+          else if (j == 4) Serial.print("Low-Beta");
+          else if (j == 5) Serial.print("High-Beta");
+          else if (j == 6) Serial.print("Low-Gamma");
+          else Serial.print("Mid-Gamma");
           SerialBT.print("-Wave: ");
           SerialBT.println(waves[j]);
       }

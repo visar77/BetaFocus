@@ -104,7 +104,7 @@ class ArduinoConnector:
         # Write a session csv
         with open(path, "w+") as f:
             f.write(
-                "TIMERTIME;TIMESTAMP;POOR_SIGNAL_QUALITY;ATTENTION;MEDITATION;DELTA;THETA;LOW ALPHA;HIGH ALPHA;LOW BETA;HIGH BETA;LOW GAMMA; HIGH GAMMA;RAW WAVE DATA\n")
+                "TIMERTIME;TIMESTAMP;POOR_SIGNAL_QUALITY;ATTENTION;MEDITATION;DELTA;THETA;LOW ALPHA;HIGH ALPHA;LOW BETA;HIGH BETA;LOW GAMMA; MID GAMMA;RAW WAVE DATA\n")
             for pack in self.__packages:
                 f.write(pack + "\n")
 

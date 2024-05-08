@@ -4,7 +4,18 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
+#define DEBUG 1
+
 BluetoothSerial SerialBT;
+
+#if DEBUG == 1
+#define debug(x) SerialBT.print(x)
+#define debugln(x) SerialBT.println(x)
+#else
+#define debug(x)
+#define debugln(x)
+#endif
+
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 32 // OLED display height, in pixels
 #define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
@@ -14,8 +25,8 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 // Global variables for package parsing
 const int MAX_LENGTH = 173;
 int thirdLastByte = 0;
-unsigned char entirePackage[173]; // for incoming serial data
-unsigned char payload[256];
+unsigned char entirePackage[173] = {0}; // for incoming serial data
+unsigned char payload[256] = {0};
 unsigned char attention = 255;
 unsigned char quality = 255;
 int lastByte = 0;
@@ -126,12 +137,10 @@ void draw() {
   display.setCursor((SCREEN_WIDTH/4) *3 +3, GRAPH_HEIGHT+2);
 
   unsigned char data = 0;
-  if (attention == 255) {
-    display.print(F("-")); //Replace with Attentionvalue
-  }
+  if (attention == 255) display.print(F("-")); //Replace with Attention value
   else {
     data = attention;
-    display.print(data);
+    display.print(attention);
   }
   addDataToGraph(data);
   drawGraph();
@@ -143,65 +152,74 @@ void draw() {
  * 0 if package couldn't be read, because the CHECKSUM was false or PAYLOADLENGTH is too long
  */
 int parsePayload(void) {
+  //Serial.println("reached");
   int extendedCodeLevel = 0;
   int index = 0;
 
-  unsigned char attention;
   unsigned char meditation;
   unsigned int raw_wave;
   unsigned int waves[8] = {0};
   unsigned int all_values[12] = {0};
 
-  SerialBT.println("-----------------------------------");
+  debugln("-----------------------------------");
 
   while (index < payLoadLength) {
     while (payload[index] == 0x55) {
       extendedCodeLevel++;
       index++;
     }
+    //Serial.println("reached2");
     int code = payload[index];
     if (code == 0x02) {
-      SerialBT.print("SIGNAL_QUALITY (0-100): ");
+      debug("SIGNAL_QUALITY (0-100): ");
       all_values[0] = (200 - payload[++index]) / 2;
-      quality = (char) all_values[0];
-      SerialBT.println(all_values[0]);
+      quality = (unsigned char) all_values[0];
+      debugln(all_values[0]);
     } else if (code == 0x04) {
-      SerialBT.print("ATTENTION (0 to 100): ");
+      debug("ATTENTION (0 to 100): ");
       all_values[1] = payload[++index];
-      attention = (char) all_values[1];
-      SerialBT.println(all_values[1]);
+      attention = (unsigned char) all_values[1];
+      debugln(all_values[1]);
     } else if (code == 0x05) {
-      SerialBT.print("MEDITATION (0 to 100): ");
+      debug("MEDITATION (0 to 100): ");
       all_values[2] = payload[++index];
-      SerialBT.println(all_values[2]);
+      debugln(all_values[2]);
     } else if (code == 0x80) {
       int length = payload[++index];
       if (length != 2) {
-        SerialBT.println("LENGTH OF RAW_VALUES WAS NOT 2!!! ERROR!!!");
+        debugln("LENGTH OF RAW_VALUES WAS NOT 2!!! ERROR!!!");
         return 0;
       }
       short raw = (payload[index + 2] >> 8) | payload[index + 1];
       index += 2;
-      SerialBT.print("Raw wave value (-32768 to 32767): ");
+      debug("Raw wave value (-32768 to 32767): ");
       all_values[3] = payload[++index];
-      SerialBT.println(all_values[3]);
+      debugln(all_values[3]);
     } else if (code == 0x83) {
       int length = payload[++index];
       if (length != 24) {
-        SerialBT.println("LENGTH OF EEG_POWERS WAS NOT 24!!! ERROR!!!");
+        debugln("LENGTH OF EEG_POWERS WAS NOT 24!!! ERROR!!!");
         return 0;
       }
       //Serial.print("length:");
       //Serial.println(length);
       for (int j=0; j<8; j++) {
+        //Serial.println("RECHEDASDADAS");
         unsigned int first_int = payload[++index];
         unsigned int second_int = payload[++index];
         unsigned int third_int = payload[++index];
         waves[j] = ((first_int << 16) | (second_int << 8) | (third_int));
         all_values[j+3] = waves[j];
-        SerialBT.print(j);
-        SerialBT.print("-Wave: ");
-        SerialBT.println(waves[j]);
+        if (j == 0) debug("Delta");
+        else if (j == 1) debug("Theta");
+        else if (j == 2) debug("Low-Alpha");
+        else if (j == 3) debug("High-Alpha");
+        else if (j == 4) debug("Low-Beta");
+        else if (j == 5) debug("High-Beta");
+        else if (j == 6) debug("Low-Gamma");
+        else debug("Mid-Gamma");
+        debug("-Wave: ");
+        debugln(waves[j]);
       }
     }
     index++;
@@ -211,8 +229,9 @@ int parsePayload(void) {
     SerialBT.print(all_values[j]);
     SerialBT.print(";");
   }
-  SerialBT.print(all_values[11]);
-  SerialBT.println("\n-----------------------------------");
+  SerialBT.println(all_values[11]);
+  debugln("-----------------------------------");
+
 
   return 1;
 }
@@ -223,54 +242,56 @@ int parsePayload(void) {
  * -1 if still not done reading the package
  */
 int readPackage() {
-  if (Serial.available() > 0) {
-  // read the incoming byte:
+  // check if there are bytes to be read, if not stop and return
+  if (Serial.available() <= 0) {
+    return -1;
+  }
+  // check if package is synced, if so, you can start parsing and checking the package
   if (synced) {
     int index = 0;
     int checksumPackage = 0;
     Serial.readBytes(payload, payLoadLength);
-    SerialBT.print("Payload: ");
+    debug("Payload: ");
     for (int j=0; j<payLoadLength; j++) {
-      SerialBT.print(payload[j]);
-      SerialBT.print(" ");
+      debug(payload[j]);
+      debug(" ");
+      Serial.println("Adding payload");
       checksumPackage += payload[j];
     }
-    SerialBT.println();
+    debugln();
     checksumPackage &= 255;
     checksumPackage = ~checksumPackage & 255;
-    //Serial.print("Checksum of packages: ");
-    //Serial.println(checksumPackage);
     checksum = Serial.read();
-    //Serial.println(checksum);
     synced = false;
     if (checksum == checksumPackage) {
-      SerialBT.println("Success");
+      //Serial.println("CHECKSUMM AND PARSING WILL HAPPEN NOW");
+      debugln("Checksum matches");
+      // Parse the package and return error code from function parsePayload()
       int success = parsePayload();
       return success;
     }
-    else {
-      SerialBT.println("FAILED: CHECKSUM NOT MATCHING");
-      return 0;
-    }
+    // CHECKSUM DOESNT MATCH RETURN 0
+    debugln("FAILED: CHECKSUM NOT MATCHING");
+    return 0;
   }
+  //
   lastByte = Serial.read();
   if (lastByte != 170 && secondLastByte == 170 && thirdLastByte == 170 && !synced) {
       if (lastByte > 170) {
-        SerialBT.println("FAILED: PAYLOADLENGTH TOO LONG");
+        debugln("FAILED: PAYLOADLENGTH TOO LONG");
         return 0;
       }
       entirePackage[0] = 170; //SYNC
       entirePackage[1] = 170; //SYNC
       entirePackage[2] = lastByte;
       payLoadLength = lastByte;
-      SerialBT.print("Payloadlength: ");
-      SerialBT.println(payLoadLength);
+      debug("Payloadlength: ");
+      debugln(payLoadLength);
       i = 0;
       synced = true;
-    }
-    secondLastByte = lastByte;
-    thirdLastByte = secondLastByte;
   }
+  secondLastByte = lastByte;
+  thirdLastByte = secondLastByte;
   return -1;
 }
 
@@ -280,7 +301,7 @@ void setup() {
 
   if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
     Serial.println("SSD1306 allocation failed");
-    SerialBT.println("SSD1306 allocation failed");
+    debugln("SSD1306 allocation failed");
     while (true); // Don't proceed, loop forever
   }
 
@@ -291,13 +312,19 @@ void setup() {
   display.setTextColor(SSD1306_WHITE);
 
   delay(3000);
+  draw();
 }
 
 void loop() {
+  // Read the package and get error code
   int success = readPackage();
+
+  // If still not doe reading the package, try again
   if (success == -1) return;
+  // If package was read, but contained an error, set attention = 255, indicating, that attention was not read
   if (success == 0) {
     attention = 255;
   }
+  // Update display
   draw();
 }
