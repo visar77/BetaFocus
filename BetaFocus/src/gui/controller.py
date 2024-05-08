@@ -22,6 +22,8 @@ class Controller:
         self.time_label = self.runWindow.time_label
         # timer
         self.timer = Timer(self.time_label)
+        # evaluation window
+        self.evalWindow = self.mainWindow.eval_window
         # stats window
         self.statsWindow = self.mainWindow.stats_window
         # info window
@@ -73,5 +75,6 @@ class Controller:
         self.resume_button.hide()
         self.pause_button.show()
         self.runWindow.close()
+        self.evalWindow.show()
         self.start_button.setEnabled(True)
         self.timer.stop()

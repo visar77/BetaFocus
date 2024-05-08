@@ -1,8 +1,13 @@
 import sys
+import matplotlib
+
+matplotlib.use('Qt5Agg')
 
 from PyQt5.QtWidgets import QMainWindow, QGridLayout, QWidget, QDesktopWidget, QApplication
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import Qt, QSize
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
+from matplotlib.figure import Figure
 
 from .ui.ui_mainwindow import Ui_MainWindow
 from .ui.ui_runwindow import Ui_RunWindow
@@ -41,6 +46,29 @@ class StatsWindow(QWidget):
         layout = QGridLayout()
         layout.setAlignment(Qt.AlignHCenter)
         layout.setContentsMargins(20, 40, 20, 20)
+
+
+class MplCanvas(FigureCanvasQTAgg):
+
+    def __init__(self, parent=None, width=5, height=4, dpi=100):
+        fig = Figure(figsize=(width, height), dpi=dpi)
+        self.axes = fig.add_subplot(111)
+        super(MplCanvas, self).__init__(fig)
+
+
+class EvalWindow(QWidget):
+
+    def __init__(self):
+        super(EvalWindow, self).__init__()
+        self.setFixedSize(920, 620)
+        self.setWindowTitle("BetaFocus")
+        self.setStyleSheet("background-color: black;")
+        layout = QGridLayout()
+        layout.setAlignment(Qt.AlignHCenter)
+        layout.setContentsMargins(20, 40, 20, 20)
+        self.upper_canvas = MplCanvas(self, width=5, height=4, dpi=100)
+        self.upper_canvas.axes.plot([0, 1, 2, 3, 4], [10, 1, 20, 3, 40])
+        layout.addWidget(self.upper_canvas, 0, 2, 1, 1)
 
 
 class RunWindow(QWidget):
@@ -87,6 +115,7 @@ class MainWindow(QMainWindow):
         self.help_button = self.mainWindow_ui.help_button
         # other windows are widgets and children of the main window
         self.run_window = RunWindow(self.start_button)
+        self.eval_window = EvalWindow()
         self.stats_window = StatsWindow()
         self.info_window = InfoWindow()
         self.help_window = HelpWindow()
