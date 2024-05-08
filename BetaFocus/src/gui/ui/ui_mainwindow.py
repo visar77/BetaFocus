@@ -56,7 +56,7 @@ class Ui_MainWindow(object):
         self.label.setSizePolicy(sizePolicy)
         self.label.setMinimumSize(QSize(500, 100))
         self.label.setMaximumSize(QSize(500, 100))
-        font = QFont()
+        font = QFont("Lato")
         font.setPointSize(60)
         self.label.setFont(font)
         self.label.setStyleSheet(u"color: white;")
@@ -88,7 +88,7 @@ class Ui_MainWindow(object):
         self.start_button.setSizePolicy(sizePolicy)
         self.start_button.setMinimumSize(QSize(300, 300))
         self.start_button.setMaximumSize(QSize(300, 300))
-        font1 = QFont()
+        font1 = QFont("Lato")
         font1.setPointSize(25)
         self.start_button.setFont(font1)
         self.start_button.setStyleSheet(u"image: url(./gui/images/start.png);\n"
