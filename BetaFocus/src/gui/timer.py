@@ -19,6 +19,9 @@ class Timer:
     def pause(self):
         self.running = False
 
+    def resume(self):
+        self.running = True
+
     def stop(self):
         self.running = False
         self.started = False

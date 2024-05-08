@@ -11,6 +11,9 @@ class Controller:
         self.mainWindow = mainWindow
         self.start_button = self.mainWindow.start_button
         self.stats_button = self.mainWindow.stats_button
+        self.connect_button = self.mainWindow.connect_button
+        self.info_button = self.mainWindow.info_button
+        self.help_button = self.mainWindow.help_button
         # run window components
         self.runWindow = self.mainWindow.run_window
         self.stop_button = self.runWindow.stop_button
@@ -21,12 +24,19 @@ class Controller:
         self.timer = Timer(self.time_label)
         # stats window
         self.statsWindow = self.mainWindow.stats_window
+        # info window
+        self.infoWindow = self.mainWindow.info_window
+        # window
+        self.helpWindow = self.mainWindow.help_window
         # add functionalities to all buttons
         self.connect()
 
     def connect(self):
         self.start_button.clicked.connect(self.start_session)
         self.stats_button.clicked.connect(self.show_stats)
+        # TODO: connect dialog
+        self.info_button.clicked.connect(self.show_info)
+        self.help_button.clicked.connect(self.show_help)
         self.pause_button.clicked.connect(self.pause_session)
         self.resume_button.clicked.connect(self.resume_session)
         self.stop_button.clicked.connect(self.stop_session)
@@ -43,13 +53,18 @@ class Controller:
     def show_stats(self):
         self.statsWindow.show()
 
+    def show_info(self):
+        self.infoWindow.show()
+
+    def show_help(self):
+        self.helpWindow.show()
+
     def pause_session(self):
         self.timer.pause()
         self.pause_button.hide()
         self.resume_button.show()
 
     def resume_session(self):
-        self.start_button.setEnabled(False)
         threading.Thread(target=self.timer.start).start()
         self.resume_button.hide()
         self.pause_button.show()

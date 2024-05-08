@@ -44,22 +44,14 @@ class StatsWindow(QWidget):
         layout.setContentsMargins(20, 40, 20, 20)
 
 
-class ControlButton(QPushButton):
-
-    def __init__(self, url: str):
-        super(ControlButton, self).__init__()
-        self.setMinimumSize(QSize(120, 120))
-        self.setStyleSheet(f"image: url({url});"
-                           "padding: 25px;")
-
-
 class RunWindow(QWidget):
 
-    def __init__(self):
+    def __init__(self, start_button):
         super(RunWindow, self).__init__()
         self.runWindow_ui = Ui_RunWindow()
         self.runWindow_ui.setupUi(self)
-        self.center()
+        # start button
+        self.start_button = start_button
         # label at the top of the window
         self.label = self.runWindow_ui.label
         # label that displays the time passed
@@ -69,16 +61,6 @@ class RunWindow(QWidget):
         self.pause_button = self.runWindow_ui.pause_button
         self.resume_button = self.runWindow_ui.resume_button
         self.resume_button.hide()
-
-    def center(self):
-        """
-        centers the main window according to the desktop size of the device used
-        """
-        qr = self.frameGeometry()
-        cp = QDesktopWidget().availableGeometry().center()
-        qr.moveCenter(cp)
-        # top left of rectangle becomes top left of window centering it
-        self.move(qr.topLeft())
 
 
 class MainWindow(QMainWindow):
@@ -105,9 +87,10 @@ class MainWindow(QMainWindow):
         # help button in the top right corner
         self.help_button = self.mainWindow_ui.help_button
         # other windows are widgets and children of the main window
-        self.run_window = RunWindow()
+        self.run_window = RunWindow(self.start_button)
         self.stats_window = StatsWindow()
         self.info_window = InfoWindow()
+        self.help_window = HelpWindow()
 
     def center(self):
         """
@@ -118,20 +101,6 @@ class MainWindow(QMainWindow):
         qr.moveCenter(cp)
         # top left of rectangle becomes top left of window centering it
         self.move(qr.topLeft())
-
-    @staticmethod
-    def center_widget(button: QPushButton) -> QWidget:
-        """
-        takes the passed button and adds it the box layout of a widget which is then returned;
-        enables the button to be centered within a grid layout
-        """
-        widget = QWidget()
-        box = QVBoxLayout()
-        box.setAlignment(Qt.AlignCenter)
-        box.addWidget(button, stretch=1, alignment=Qt.AlignCenter)
-        box.setContentsMargins(0, 60, 0, 20)
-        widget.setLayout(box)
-        return widget
 
 
 class App(QApplication):
