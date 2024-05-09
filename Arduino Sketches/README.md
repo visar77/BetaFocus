@@ -1,6 +1,6 @@
 # Overview
-[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/visar77/BetaFocus/blob/main/Arduino+Sketches/README.md)
-[![de](https://img.shields.io/badge/lang-de-red.svg)](https://github.com/visar77/BetaFocus/blob/main/Arduino+Sketches/README.de.md)
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/visar77/BetaFocus/blob/main/Arduino%20Sketches/README.md)
+[![de](https://img.shields.io/badge/lang-de-red.svg)](https://github.com/visar77/BetaFocus/blob/main/Arduino%20Sketches/README.de.md)
 
 This directory contains a number of Arduino sketches, which can be loaded onto most microcontrollers. <br>
 We used an ESP32-WROOM MC, which requires the installation of extra drivers to load sketches. <br> 
