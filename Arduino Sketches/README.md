@@ -9,29 +9,23 @@ https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers?tab=downloads
 
 ## bluetooth_arduino_sketch.ino
 This sketch should work with all ESP32 or Arduino Boards with Bluetooth (not BLE). You can change the name of your device
-by changing the string in the first argument:
+by changing the string in the first argument of code (in `setup()` method) :
 ```cpp
 SerialBT.begin("BetaFocus Device", false);
 ```
+## display_bluetooth_sketches
+These sketches should work with all ESP32 or Arduino Boards with Bluetooth (not BLE) capabilities. 
 
-## display_bluetooth_arduino_sketch.ino
-This sketch should work with all ESP32 or Arduino Boards with Bluetooth (not BLE) and has only been tested on a mini I2C display (128x32). 
+If you wish to change the Blueetooth device name, look at the instruction above.
 
-If you wish to change your devices bluetooth name, look at the instruction above. If you wish to use a 128x64 display, then you need to change following lines in the sketch 
-(**they are not grouped like this, you need to find them in the upper part of the sketch**):
-```cpp
-#define SCREEN_HEIGHT 32 // OLED display height, in pixels
-#define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
-#define GRAPH_HEIGHT 23
-```
-to
-```cpp
-#define SCREEN_HEIGHT 64 // OLED display height, in pixels
-#define SCREEN_ADDRESS 0x3D ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
-#define GRAPH_HEIGHT 46
-```
-**Important Information:** `SCREEN_ADDRESS` could be different from `0x3C` or `0x3D`. In that case, you can either find the screen address by yourself or 
-use the `Wire`, a standard library in the Arduino IDE and use the example sketch `WireScanner`, which will determine the screen address automatically.
+
+**Important Information:** `SCREEN_ADDRESS` could be different from `0x3C`. In that case, you can either find the screen address 
+by looking at the datasheet or use `Wire`, a standard library in the Arduino IDE and use the example sketch `WireScan`, which will determine the screen address automatically.
+### display_128x64_bluetooth_arduino_sketch.ino
+Works and has been tested on an I2C display with size 128x64. 
+### display_128x32_bluetooth_arduino_sketch.ino
+Should work without issues on an I2C display with size 128x32. 
+
 ## usb_arduino_sketch.ino
 **WARNING: DOESN'T WORK AND DON'T USE IF POWERSUPPLY OF MICROCONTROLLER IS CONNECTED TO EEG (VCC PIN OF MICROCONTROLLER CONNECTED / SOLDERED TO POWERSUPPLY OF EEG TOY) !!!**
 
