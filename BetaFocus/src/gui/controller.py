@@ -1,5 +1,6 @@
 import threading
-from PyQt5.QtWidgets import QMainWindow
+
+from PyQt5.QtWidgets import QMainWindow, QWidget
 
 from .timer import Timer
 
@@ -44,6 +45,7 @@ class Controller:
         self.pause_button.clicked.connect(self.pause_session)
         self.resume_button.clicked.connect(self.resume_session)
         self.stop_button.clicked.connect(self.stop_session)
+        self.runWindow.signal.connect(self.stop_session)
 
     def start_session(self):
         """

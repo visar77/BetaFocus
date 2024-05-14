@@ -5,7 +5,7 @@ matplotlib.use('Qt5Agg')
 
 from PyQt5.QtWidgets import QMainWindow, QGridLayout, QWidget, QDesktopWidget, QApplication, QDialog
 from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt, QSize, pyqtSignal
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 
@@ -84,6 +84,7 @@ class EvalWindow(QWidget):
 
 
 class RunWindow(QWidget):
+    signal = pyqtSignal()
 
     def __init__(self, start_button):
         super(RunWindow, self).__init__()
@@ -100,6 +101,9 @@ class RunWindow(QWidget):
         self.pause_button = self.runWindow_ui.pause_button
         self.resume_button = self.runWindow_ui.resume_button
         self.resume_button.hide()
+
+    def closeEvent(self, a0):
+        self.signal.emit()
 
 
 class MainWindow(QMainWindow):
