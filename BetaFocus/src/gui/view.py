@@ -3,9 +3,9 @@ import matplotlib
 
 matplotlib.use('Qt5Agg')
 
-from PyQt5.QtWidgets import QMainWindow, QGridLayout, QWidget, QDesktopWidget, QApplication
+from PyQt5.QtWidgets import QMainWindow, QGridLayout, QWidget, QDesktopWidget, QApplication, QDialog
 from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt, QSize, pyqtSignal
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 
@@ -48,6 +48,18 @@ class StatsWindow(QWidget):
         layout.setContentsMargins(20, 40, 20, 20)
 
 
+class ConnectDialog(QDialog):
+
+    def __init__(self):
+        super(ConnectDialog, self).__init__()
+        self.setFixedSize(400, 200)
+        self.setWindowTitle("BetaFocus")
+        self.setStyleSheet("background-color: black;")
+        layout = QGridLayout()
+        layout.setAlignment(Qt.AlignHCenter)
+        layout.setContentsMargins(20, 40, 20, 20)
+
+
 class MplCanvas(FigureCanvasQTAgg):
 
     def __init__(self, parent=None, width=5, height=4, dpi=100):
@@ -68,10 +80,11 @@ class EvalWindow(QWidget):
         layout.setContentsMargins(20, 40, 20, 20)
         self.upper_canvas = MplCanvas(self, width=5, height=4, dpi=100)
         self.upper_canvas.axes.plot([0, 1, 2, 3, 4], [10, 1, 20, 3, 40])
-        layout.addWidget(self.upper_canvas, 0, 2, 1, 1)
+        layout.addWidget(self.upper_canvas, 0, 0, 1, 1)
 
 
 class RunWindow(QWidget):
+    signal = pyqtSignal()
 
     def __init__(self, start_button):
         super(RunWindow, self).__init__()
@@ -88,6 +101,9 @@ class RunWindow(QWidget):
         self.pause_button = self.runWindow_ui.pause_button
         self.resume_button = self.runWindow_ui.resume_button
         self.resume_button.hide()
+
+    def closeEvent(self, a0):
+        self.signal.emit()
 
 
 class MainWindow(QMainWindow):
@@ -117,6 +133,7 @@ class MainWindow(QMainWindow):
         self.run_window = RunWindow(self.start_button)
         self.eval_window = EvalWindow()
         self.stats_window = StatsWindow()
+        self.connect_dialog = ConnectDialog()
         self.info_window = InfoWindow()
         self.help_window = HelpWindow()
 

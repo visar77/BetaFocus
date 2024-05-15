@@ -1,5 +1,6 @@
 import threading
-from PyQt5.QtWidgets import QMainWindow
+
+from PyQt5.QtWidgets import QMainWindow, QWidget
 
 from .timer import Timer
 
@@ -26,6 +27,8 @@ class Controller:
         self.evalWindow = self.mainWindow.eval_window
         # stats window
         self.statsWindow = self.mainWindow.stats_window
+        # connection dialog
+        self.connectDialog = self.mainWindow.connect_dialog
         # info window
         self.infoWindow = self.mainWindow.info_window
         # window
@@ -36,12 +39,13 @@ class Controller:
     def connect(self):
         self.start_button.clicked.connect(self.start_session)
         self.stats_button.clicked.connect(self.show_stats)
-        # TODO: connect dialog
+        self.connect_button.clicked.connect(self.show_dialog)
         self.info_button.clicked.connect(self.show_info)
         self.help_button.clicked.connect(self.show_help)
         self.pause_button.clicked.connect(self.pause_session)
         self.resume_button.clicked.connect(self.resume_session)
         self.stop_button.clicked.connect(self.stop_session)
+        self.runWindow.signal.connect(self.stop_session)
 
     def start_session(self):
         """
@@ -54,6 +58,9 @@ class Controller:
 
     def show_stats(self):
         self.statsWindow.show()
+
+    def show_dialog(self):
+        self.connectDialog.show()
 
     def show_info(self):
         self.infoWindow.show()
