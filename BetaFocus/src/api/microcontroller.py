@@ -6,7 +6,10 @@ from datetime import datetime, timezone
 import serial.tools.list_ports
 
 
-class Arduino:
+class MicroController:
+    """
+    Represents the MicroController.
+    """
 
     def __init__(self, port, baudrate=9600, timeout=3.0):
         self.__port = port
@@ -30,7 +33,6 @@ class Arduino:
                 s = line[7:-3]
                 full_package = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S.%f') + ";" + s
                 return full_package
-
         return None
 
     def close(self):
@@ -53,10 +55,10 @@ class Arduino:
         return sorted(serial.tools.list_ports.comports())
 
 
-class ArduinoConnector:
+class MCConnector:
 
     def __init__(self, port, baudrate=9600):
-        self.__arduino = Arduino(port, baudrate)
+        self.__arduino = MicroController(port, baudrate)
         self.open = True
         self.__packages = []
         self.__pause = False
@@ -113,12 +115,14 @@ class ArduinoConnector:
         # Add to sessions.csv or create session.csv
         if not os.path.exists(session_csv_path):
             with open("../../data/sessions.csv", "a+") as f:
-                f.write("INDEX;DATE;FILE_NAME;TIME_SET;TIMESTAMP_OF_FIRST_VALID_PACKAGE;TIMESTAMP_OF_LAST_VALID_PACKAGE\n")
+                f.write(
+                    "INDEX;DATE;FILE_NAME;TIME_SET;TIMESTAMP_OF_FIRST_VALID_PACKAGE;TIMESTAMP_OF_LAST_VALID_PACKAGE\n")
 
         with open(session_csv_path, "w+") as f:
             lines = f.readlines()
-            if not lines:   # lines is empty
-                f.write("INDEX;DATE;FILE_NAME;TIME_SET;TIMESTAMP_OF_FIRST_VALID_PACKAGE;TIMESTAMP_OF_LAST_VALID_PACKAGE\n")
+            if not lines:  # lines is empty
+                f.write(
+                    "INDEX;DATE;FILE_NAME;TIME_SET;TIMESTAMP_OF_FIRST_VALID_PACKAGE;TIMESTAMP_OF_LAST_VALID_PACKAGE\n")
                 index = 0
             else:
                 index = lines[-1].split(";")[0]
@@ -157,5 +161,6 @@ class ArduinoConnector:
     def close(self):
         self.__arduino.close()
 
-ac = ArduinoConnector('COM11')
+
+ac = MCConnector('COM11')
 ac.start_session(10)
