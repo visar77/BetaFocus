@@ -24,7 +24,7 @@ class Timer:
 
     def stop(self):
         self.pause()
-        self.stopped = False
+        self.stopped = True
         self.started = False
         self.passed = 0
 
