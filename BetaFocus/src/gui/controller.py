@@ -1,6 +1,8 @@
 import threading
 
-from PyQt5.QtWidgets import QMainWindow, QWidget
+from PyQt5.QtWidgets import QMainWindow
+
+from threading import Thread
 
 from .timer import Timer
 
@@ -35,6 +37,7 @@ class Controller:
         self.helpWindow = self.mainWindow.help_window
         # add functionalities to all buttons
         self.connect()
+        self.timer_thread = Thread(target=self.timer.count)
 
     def connect(self):
         self.start_button.clicked.connect(self.start_session)
@@ -44,8 +47,8 @@ class Controller:
         self.help_button.clicked.connect(self.show_help)
         self.pause_button.clicked.connect(self.pause_session)
         self.resume_button.clicked.connect(self.resume_session)
-        self.stop_button.clicked.connect(self.stop_session)
-        self.runWindow.signal.connect(self.stop_session)
+        self.stop_button.clicked.connect(self.runWindow.close)
+        self.runWindow.close_signal.connect(self.stop_session)
 
     def start_session(self):
         """
@@ -54,7 +57,8 @@ class Controller:
         """
         self.runWindow.show()
         self.start_button.setEnabled(False)
-        threading.Thread(target=self.timer.start).start()
+        self.timer.start()
+        self.timer_thread.start()
 
     def show_stats(self):
         self.statsWindow.show()
@@ -74,14 +78,15 @@ class Controller:
         self.resume_button.show()
 
     def resume_session(self):
-        threading.Thread(target=self.timer.start).start()
+        self.timer.resume()
         self.resume_button.hide()
         self.pause_button.show()
 
     def stop_session(self):
+        # Reset state of run buttons
         self.resume_button.hide()
         self.pause_button.show()
-        self.runWindow.close()
+
         self.evalWindow.show()
         self.start_button.setEnabled(True)
         self.timer.stop()

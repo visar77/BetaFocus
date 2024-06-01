@@ -84,14 +84,12 @@ class EvalWindow(QWidget):
 
 
 class RunWindow(QWidget):
-    signal = pyqtSignal()
+    close_signal = pyqtSignal()
 
-    def __init__(self, start_button):
+    def __init__(self):
         super(RunWindow, self).__init__()
         self.runWindow_ui = Ui_RunWindow()
         self.runWindow_ui.setupUi(self)
-        # start button
-        self.start_button = start_button
         # label at the top of the window
         self.label = self.runWindow_ui.label
         # label that displays the time passed
@@ -100,10 +98,10 @@ class RunWindow(QWidget):
         self.stop_button = self.runWindow_ui.stop_button
         self.pause_button = self.runWindow_ui.pause_button
         self.resume_button = self.runWindow_ui.resume_button
-        self.resume_button.hide()
+        self.resume_button.hide()   # needs to be hidden, only shown when
 
     def closeEvent(self, a0):
-        self.signal.emit()
+        self.close_signal.emit()
 
 
 class MainWindow(QMainWindow):
@@ -130,7 +128,8 @@ class MainWindow(QMainWindow):
         # help button in the top right corner
         self.help_button = self.mainWindow_ui.help_button
         # other windows are widgets and children of the main window
-        self.run_window = RunWindow(self.start_button)
+        # Don't know if we should do this ==> All windows are there at the same time
+        self.run_window = RunWindow()
         self.eval_window = EvalWindow()
         self.stats_window = StatsWindow()
         self.connect_dialog = ConnectDialog()

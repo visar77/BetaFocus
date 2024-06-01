@@ -8,13 +8,13 @@ class Timer:
     def __init__(self, time_label: QLabel):
         self.running: bool = False
         self.started: bool = False
+        self.stopped: bool = False
         self.passed: float = 0
         self.time_label = time_label
 
     def start(self):
         self.running = True
         self.started = True
-        self.count()
 
     def pause(self):
         self.running = False
@@ -23,19 +23,21 @@ class Timer:
         self.running = True
 
     def stop(self):
-        self.running = False
+        self.pause()
+        self.stopped = False
         self.started = False
         self.passed = 0
 
     def count(self):
-        start = time.time()
-        if self.started:
-            until_now: float = self.passed
-        else:
-            until_now: float = 0
-        while self.running:
-            self.passed = time.time() - start + until_now
-            self.time_label.setText(self.format_time_string())
+        while not self.stopped:
+            start = time.monotonic()
+            if self.started:
+                until_now: float = self.passed
+            else:
+                until_now: float = 0
+            while self.running:
+                self.passed = time.monotonic() - start + until_now
+                self.time_label.setText(self.format_time_string())
 
     def format_time_string(self) -> str:
         secs: float = self.passed % 60
