@@ -5,11 +5,23 @@ from PyQt5.QtWidgets import QMainWindow
 from threading import Thread
 
 from .timer import Timer
+from api.microcontroller import MCConnector
 
 
 class Controller:
 
     def __init__(self, mainWindow: QMainWindow):
+        # MicroController-Controller
+
+        # Lass erstmal so stehen, kümmern uns später dann zusammen, wie man das richtig umsetzt
+        # Habe ein try und catch hinzugefügt, damit Programm nicht abstürzt, wenn wir später den Port über
+        # die GUI definieren, wird das alles klappen und die try und catches werden mit was anderem ersetzt
+        port = 'COM5'
+        try:
+            self.mc_connector = MCConnector(port, 9600)
+        except Exception as e:
+            pass
+
         # main window components
         self.mainWindow = mainWindow
         self.start_button = self.mainWindow.start_button
@@ -59,6 +71,11 @@ class Controller:
         self.start_button.setEnabled(False)
         self.timer.start()
         self.timer_thread.start()
+        # Später können wir die try und catches entfernen, wenn mc_connector den richtigen Port bekommt
+        try:
+            self.mc_connector.start_session()
+        except Exception as e:
+            pass
 
     def show_stats(self):
         self.statsWindow.show()
@@ -76,11 +93,19 @@ class Controller:
         self.timer.pause()
         self.pause_button.hide()
         self.resume_button.show()
+        try:
+            self.mc_connector.pause_session()
+        except Exception as e:
+            pass
 
     def resume_session(self):
         self.timer.resume()
         self.resume_button.hide()
         self.pause_button.show()
+        try:
+            self.mc_connector.resume_session()
+        except Exception as e:
+            pass
 
     def stop_session(self):
         # Reset state of run buttons
@@ -90,3 +115,7 @@ class Controller:
         self.evalWindow.show()
         self.start_button.setEnabled(True)
         self.timer.stop()
+        try:
+            self.mc_connector.stop_session()
+        except Exception as e:
+            pass
