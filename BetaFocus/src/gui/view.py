@@ -1,9 +1,10 @@
+import os
 import sys
 import matplotlib
 
 matplotlib.use('Qt5Agg')
 
-from PyQt5.QtWidgets import QMainWindow, QGridLayout, QWidget, QDesktopWidget, QApplication, QDialog
+from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import Qt, QSize, pyqtSignal
 from PyQt5.QtCore import QUrl
@@ -15,37 +16,42 @@ from .ui.ui_mainwindow import Ui_MainWindow
 from .ui.ui_runwindow import Ui_RunWindow
 
 
-class PDFViewer(QWebEngineView):
+class MarkDownViewer(QWidget):
+
     def __init__(self, path, title):
         super().__init__()
-        self.load(QUrl("https://google.com/"))
-        self.setStyleSheet("background-color: black;")
-        self.show()
-
-
-class HelpWindow(QWidget):
-
-    def __init__(self):
-        super(HelpWindow, self).__init__()
         self.setFixedSize(920, 620)
-        self.setWindowTitle("BetaFocus - Hilfe")
+        self.setWindowTitle(f"BetaFocus - {title}")
         self.setStyleSheet("background-color: black;")
+        self.textedit = QTextEdit()
+        self.textedit.setReadOnly(True)
+        self.textedit.setMarkdown(''.join(open(path).readlines()))
         layout = QGridLayout()
         layout.setAlignment(Qt.AlignHCenter)
         layout.setContentsMargins(20, 40, 20, 20)
+        layout.addWidget(self.textedit, 0, 0)
         self.setLayout(layout)
 
 
-class InfoWindow(QWidget):
+class PDFViewer(QWebEngineView):
+    """
+    Creates a PDFViewer, which displays a PDF given a file path to it.
+    """
 
-    def __init__(self):
-        super(InfoWindow, self).__init__()
+    def __init__(self, path, title):
+        """
+        Creates
+        :param path: relative path to view.py
+        :param title: title of window, title will be "BetaFocus - {title}"
+        """
+        super().__init__()
         self.setFixedSize(920, 620)
-        self.setWindowTitle("BetaFocus - Info")
+        self.setWindowTitle(f"BetaFocus - {title}")
         self.setStyleSheet("background-color: black;")
-        layout = QGridLayout()
-        layout.setAlignment(Qt.AlignHCenter)
-        layout.setContentsMargins(20, 40, 20, 20)
+        self.settings().setAttribute(self.settings().WebAttribute.PluginsEnabled, True)
+        self.settings().setAttribute(self.settings().WebAttribute.PdfViewerEnabled, True)
+        self.pdf_path = f'file://{"%20".join(path)}'
+        self.load(QUrl(f'file://{os.path.abspath(path)}'))
 
 
 class StatsWindow(QWidget):
@@ -57,6 +63,7 @@ class StatsWindow(QWidget):
         layout = QGridLayout()
         layout.setAlignment(Qt.AlignHCenter)
         layout.setContentsMargins(20, 40, 20, 20)
+        self.setLayout(layout)
 
 
 class ConnectDialog(QDialog):
@@ -69,6 +76,15 @@ class ConnectDialog(QDialog):
         layout = QGridLayout()
         layout.setAlignment(Qt.AlignHCenter)
         layout.setContentsMargins(20, 40, 20, 20)
+
+        self.title_label = QLabel("Verbindung")
+        self.layout().addWidget(self.title_label, 0, 0, 1, 2)
+
+        self.port_label = QLabel("Ports:")
+        self.layout().addWidget(self.port_label, 1, 0, 1, 1)
+
+        self.port_combo_box = QComboBox(self)
+        self.layout().addWidget(self.port_combo_box, 1, 1, 1, 1)
 
 
 class MplCanvas(FigureCanvasQTAgg):
@@ -147,9 +163,10 @@ class MainWindow(QMainWindow):
         self.connect_button.clicked.connect(self.connect_dialog.show)
         self.stats_window = StatsWindow()
         self.stats_button.clicked.connect(self.stats_window.show)
-        self.info_window = InfoWindow()
+        self.info_window = MarkDownViewer(os.path.join(os.path.dirname(os.path.dirname((os.getcwd()))), "README.md"),
+                                     "Info")
         self.info_button.clicked.connect(self.info_window.show)
-        self.help_window = HelpWindow()
+        self.help_window = MarkDownViewer("/Users/nanegotte/Desktop/Software_Engineering/BetaFocus/README.md", "Hilfe")
         self.help_button.clicked.connect(self.help_window.show)
         self.show()
 

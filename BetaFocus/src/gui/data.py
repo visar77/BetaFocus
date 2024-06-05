@@ -33,7 +33,8 @@ class Session:
 
     def init_data(self):
         self.data = pd.read_csv(self.path)
-        print(self.data)
+        if self.data:
+            print("yes")
 
     def get_x_vals(self):
         pass

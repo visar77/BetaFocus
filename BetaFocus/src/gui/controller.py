@@ -89,3 +89,6 @@ class Controller:
             self.session.set_path(self.mc_connector.last_session_path())
         except Exception as e:
             pass
+
+    def set_microcontroller(self, port):
+        self.mc_connector = MCConnector(port)
