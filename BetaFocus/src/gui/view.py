@@ -6,11 +6,21 @@ matplotlib.use('Qt5Agg')
 from PyQt5.QtWidgets import QMainWindow, QGridLayout, QWidget, QDesktopWidget, QApplication, QDialog
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import Qt, QSize, pyqtSignal
+from PyQt5.QtCore import QUrl
+from PyQt5.QtWebEngineWidgets import QWebEngineView
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 
 from .ui.ui_mainwindow import Ui_MainWindow
 from .ui.ui_runwindow import Ui_RunWindow
+
+
+class PDFViewer(QWebEngineView):
+    def __init__(self, path, title):
+        super().__init__()
+        self.load(QUrl("https://google.com/"))
+        self.setStyleSheet("background-color: black;")
+        self.show()
 
 
 class HelpWindow(QWidget):
@@ -23,6 +33,7 @@ class HelpWindow(QWidget):
         layout = QGridLayout()
         layout.setAlignment(Qt.AlignHCenter)
         layout.setContentsMargins(20, 40, 20, 20)
+        self.setLayout(layout)
 
 
 class InfoWindow(QWidget):

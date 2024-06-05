@@ -51,7 +51,6 @@ class Controller:
         self.timer.start()
         if not self.timer_thread.is_alive():
             self.timer_thread = Thread(target=self.timer.count)
-        print(self.timer_thread.name)
         self.timer_thread.start()
         # Später können wir die try und catches entfernen, wenn mc_connector den richtigen Port bekommt
         try:
@@ -86,6 +85,7 @@ class Controller:
         self.main_window.start_button.setEnabled(True)
         self.timer.stop()
         try:
-            self.session.set_path(self.mc_connector.stop_session())
+            self.mc_connector.stop_session()
+            self.session.set_path(self.mc_connector.last_session_path())
         except Exception as e:
             pass
