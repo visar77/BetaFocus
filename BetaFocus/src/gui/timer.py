@@ -15,6 +15,7 @@ class Timer:
     def start(self):
         self.running = True
         self.started = True
+        self.stopped = False
 
     def pause(self):
         self.running = False
@@ -38,6 +39,7 @@ class Timer:
             while self.running:
                 self.passed = time.monotonic() - start + until_now
                 self.time_label.setText(self.format_time_string())
+        self.passed = 0
 
     def format_time_string(self) -> str:
         secs: float = self.passed % 60
