@@ -18,7 +18,7 @@ class HelpWindow(QWidget):
     def __init__(self):
         super(HelpWindow, self).__init__()
         self.setFixedSize(920, 620)
-        self.setWindowTitle("BetaFocus")
+        self.setWindowTitle("BetaFocus - Hilfe")
         self.setStyleSheet("background-color: black;")
         layout = QGridLayout()
         layout.setAlignment(Qt.AlignHCenter)
@@ -30,7 +30,7 @@ class InfoWindow(QWidget):
     def __init__(self):
         super(InfoWindow, self).__init__()
         self.setFixedSize(920, 620)
-        self.setWindowTitle("BetaFocus")
+        self.setWindowTitle("BetaFocus - Info")
         self.setStyleSheet("background-color: black;")
         layout = QGridLayout()
         layout.setAlignment(Qt.AlignHCenter)
@@ -41,7 +41,7 @@ class StatsWindow(QWidget):
     def __init__(self):
         super(StatsWindow, self).__init__()
         self.setFixedSize(920, 620)
-        self.setWindowTitle("BetaFocus")
+        self.setWindowTitle("BetaFocus - Archiv")
         self.setStyleSheet("background-color: black;")
         layout = QGridLayout()
         layout.setAlignment(Qt.AlignHCenter)
@@ -53,7 +53,7 @@ class ConnectDialog(QDialog):
     def __init__(self):
         super(ConnectDialog, self).__init__()
         self.setFixedSize(400, 200)
-        self.setWindowTitle("BetaFocus")
+        self.setWindowTitle("BetaFocus - Verbinden")
         self.setStyleSheet("background-color: black;")
         layout = QGridLayout()
         layout.setAlignment(Qt.AlignHCenter)
@@ -73,7 +73,7 @@ class EvalWindow(QWidget):
     def __init__(self):
         super(EvalWindow, self).__init__()
         self.setFixedSize(920, 620)
-        self.setWindowTitle("BetaFocus")
+        self.setWindowTitle("BetaFocus - Auswertung")
         self.setStyleSheet("background-color: black;")
         layout = QGridLayout()
         layout.setAlignment(Qt.AlignHCenter)
@@ -88,17 +88,19 @@ class RunWindow(QWidget):
 
     def __init__(self):
         super(RunWindow, self).__init__()
-        self.runWindow_ui = Ui_RunWindow()
-        self.runWindow_ui.setupUi(self)
+        self.run_window_ui = Ui_RunWindow()
+        self.run_window_ui.setupUi(self)
+        self.setWindowTitle("BetaFocus - Timer")
         # label at the top of the window
-        self.label = self.runWindow_ui.label
+        self.label = self.run_window_ui.label
         # label that displays the time passed
-        self.time_label = self.runWindow_ui.time_label
+        self.time_label = self.run_window_ui.time_label
         # set control buttons
-        self.stop_button = self.runWindow_ui.stop_button
-        self.pause_button = self.runWindow_ui.pause_button
-        self.resume_button = self.runWindow_ui.resume_button
-        self.resume_button.hide()   # needs to be hidden, only shown when
+        self.stop_button = self.run_window_ui.stop_button
+        self.stop_button.clicked.connect(self.close)
+        self.pause_button = self.run_window_ui.pause_button
+        self.resume_button = self.run_window_ui.resume_button
+        self.resume_button.hide()  # needs to be hidden, only shown when
 
     def closeEvent(self, a0):
         self.close_signal.emit()
@@ -108,33 +110,37 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super(MainWindow, self).__init__()
-        self.mainWindow_ui = Ui_MainWindow()
-        self.mainWindow_ui.setupUi(self)
+        self.main_window_ui = Ui_MainWindow()
+        self.main_window_ui.setupUi(self)
         self.center()
         # triangular start button
-        self.start_button = self.mainWindow_ui.start_button
+        self.start_button = self.main_window_ui.start_button
         # statistics button at the bottom right
-        self.stats_button = self.mainWindow_ui.stats_button
+        self.stats_button = self.main_window_ui.stats_button
         pic = QPixmap("./gui/images/stats.png")
         self.stats_button.setIcon(QIcon(pic))
         self.stats_button.setIconSize(QSize(20, 20))
         # connect button at the bottom left
-        self.connect_button = self.mainWindow_ui.connect_button
+        self.connect_button = self.main_window_ui.connect_button
         pic = QPixmap("./gui/images/connect.jpeg")
         self.connect_button.setIcon(QIcon(pic))
         self.connect_button.setIconSize(QSize(20, 20))
         # information button in the top left corner
-        self.info_button = self.mainWindow_ui.info_button
+        self.info_button = self.main_window_ui.info_button
         # help button in the top right corner
-        self.help_button = self.mainWindow_ui.help_button
-        # other windows are widgets and children of the main window
-        # Don't know if we should do this ==> All windows are there at the same time
+        self.help_button = self.main_window_ui.help_button
+        # other windows are children of main window
         self.run_window = RunWindow()
         self.eval_window = EvalWindow()
-        self.stats_window = StatsWindow()
         self.connect_dialog = ConnectDialog()
+        self.connect_button.clicked.connect(self.connect_dialog.show)
+        self.stats_window = StatsWindow()
+        self.stats_button.clicked.connect(self.stats_window.show)
         self.info_window = InfoWindow()
+        self.info_button.clicked.connect(self.info_window.show)
         self.help_window = HelpWindow()
+        self.help_button.clicked.connect(self.help_window.show)
+        self.show()
 
     def center(self):
         """
@@ -151,4 +157,4 @@ class App(QApplication):
 
     def __init__(self):
         super().__init__(sys.argv)
-        self.mainWindow = MainWindow()
+        self.main_window = MainWindow()
