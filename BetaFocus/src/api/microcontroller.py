@@ -162,7 +162,7 @@ class MCConnector:
     def stop_session(self):
         """
         Stops the session and writes the data to a csv file.
-        :return:
+        :return: path to csv file as string
         """
         self.close()  # Close the connection and stops the session logging done by start_session
 
@@ -230,6 +230,23 @@ class MCConnector:
         print("RESUMED")
         self.__pause = False
         self.timer_start = time.monotonic()
+
+    @staticmethod
+    def last_session_path():
+        """
+        Returns path to last session taken
+        :return: str
+        """
+        path = os.path.join(up_dir(up_dir(up_dir(os.path.realpath(__file__)))), "data")
+
+        session_csv_path = os.path.join(os.path.dirname(path), "sessions.csv")
+
+        with open(session_csv_path, "w+") as f:
+            lines = f.readlines()
+            last_session_file_name = lines[-1].split(";")[2]
+
+        path_to_last_session = os.path.join(path, last_session_file_name)
+        return path_to_last_session
 
     def close(self):
         """
