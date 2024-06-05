@@ -4,8 +4,7 @@ from gui.controller import Controller
 
 def main():
     app = App()
-    controller = Controller(app.mainWindow)
-    app.mainWindow.show()
+    controller = Controller(app.main_window)
     app.exec()
 
 
