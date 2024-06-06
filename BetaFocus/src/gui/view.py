@@ -14,6 +14,7 @@ from matplotlib.figure import Figure
 
 from .ui.ui_mainwindow import Ui_MainWindow
 from .ui.ui_runwindow import Ui_RunWindow
+from .ui.ui_connectdialog import Ui_ConnectDialog
 
 
 class MarkDownViewer(QWidget):
@@ -22,7 +23,6 @@ class MarkDownViewer(QWidget):
         super().__init__()
         self.setFixedSize(920, 620)
         self.setWindowTitle(f"BetaFocus - {title}")
-        self.setStyleSheet("background-color: black;")
         self.textedit = QTextEdit()
         self.textedit.setReadOnly(True)
         self.textedit.setMarkdown(''.join(open(path).readlines()))
@@ -70,21 +70,12 @@ class ConnectDialog(QDialog):
 
     def __init__(self):
         super(ConnectDialog, self).__init__()
-        self.setFixedSize(400, 200)
-        self.setWindowTitle("BetaFocus - Verbinden")
-        self.setStyleSheet("background-color: black;")
-        layout = QGridLayout()
-        layout.setAlignment(Qt.AlignHCenter)
-        layout.setContentsMargins(20, 40, 20, 20)
+        self.ui = Ui_ConnectDialog()
+        self.ui.setupUi(self)
+        self.combo_box = self.ui.combo_box
 
-        self.title_label = QLabel("Verbindung")
-        self.layout().addWidget(self.title_label, 0, 0, 1, 2)
-
-        self.port_label = QLabel("Ports:")
-        self.layout().addWidget(self.port_label, 1, 0, 1, 1)
-
-        self.port_combo_box = QComboBox(self)
-        self.layout().addWidget(self.port_combo_box, 1, 1, 1, 1)
+    def reject(self):
+        self.hide()
 
 
 class MplCanvas(FigureCanvasQTAgg):
@@ -164,9 +155,10 @@ class MainWindow(QMainWindow):
         self.stats_window = StatsWindow()
         self.stats_button.clicked.connect(self.stats_window.show)
         self.info_window = MarkDownViewer(os.path.join(os.path.dirname(os.path.dirname((os.getcwd()))), "README.md"),
-                                     "Info")
+                                          "Info")
         self.info_button.clicked.connect(self.info_window.show)
-        self.help_window = MarkDownViewer("/Users/nanegotte/Desktop/Software_Engineering/BetaFocus/README.md", "Hilfe")
+        self.help_window = MarkDownViewer(os.path.join(os.path.dirname(os.path.dirname((os.getcwd()))), "README.md"),
+                                          "Hilfe")
         self.help_button.clicked.connect(self.help_window.show)
         self.show()
 

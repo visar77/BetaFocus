@@ -1,34 +1,41 @@
 from threading import Thread
-from PyQt5.QtWidgets import QMainWindow
+
+from PyQt5.Qt import QApplication
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QMessageBox
 
 from .timer import Timer
-from api.microcontroller import MCConnector
+from api.microcontroller import *
 from .data import Archive, Session
+from .view import MainWindow
 
 
 class Controller:
 
-    def __init__(self, main_window: QMainWindow):
+    def __init__(self, main_window: MainWindow):
         # MicroController-Controller
 
-        # Lass erstmal so stehen, kümmern uns später dann zusammen, wie man das richtig umsetzt
-        # Habe ein try und catch hinzugefügt, damit Programm nicht abstürzt, wenn wir später den Port über
-        # die GUI definieren, wird das alles klappen und die try und catches werden mit was anderem ersetzt
-        port = 'COM5'
-        try:
-            self.mc_connector = MCConnector(port, 9600)
-        except Exception as e:
-            pass
+        self.port = None
+        self.mc_connector = None
 
         # windows
         self.main_window = main_window
         self.run_window = self.main_window.run_window
         self.eval_window = self.main_window.eval_window
         self.connect_dialog = self.main_window.connect_dialog
+        self.connect_dialog_button = self.main_window.connect_button
         self.stats_window = self.main_window.stats_window
+
         # timer
         self.timer = Timer(self.run_window.time_label)
         self.timer_thread = Thread(target=self.timer.count)
+
+        # error message box
+        self.error_message_box = QMessageBox(parent=self.main_window)
+        self.error_message_box.setWindowTitle("BetaFocus - Fehlermeldung")
+        self.error_message_box.setIcon(QMessageBox.Critical)
+        self.error_message_box.setStyleSheet("color: white")
+
         # data
         self.archive = Archive()
         self.session = Session()
@@ -36,6 +43,8 @@ class Controller:
         self.connect()
 
     def connect(self):
+        self.connect_dialog.accepted.connect(self.set_microcontroller)
+        self.connect_dialog_button.clicked.connect(self.insert_ports_to_combobox)
         self.main_window.start_button.clicked.connect(self.start_session)
         self.run_window.pause_button.clicked.connect(self.pause_session)
         self.run_window.resume_button.clicked.connect(self.resume_session)
@@ -46,6 +55,23 @@ class Controller:
         handles the view changes upon session start;
         launches the stopwatch in a dedicated thread
         """
+        if self.mc_connector is None:
+            if self.port is None:
+                self.error_message_box.setText(
+                    "Session kann nicht gestartet werden, da kein Port ausgewählt wurde. Wähle bitte ein Port im Verbindungsfenster aus.")
+                self.error_message_box.show()
+            else:
+                try:
+                    self.main_window.setCursor(Qt.WaitCursor)
+                    self.mc_connector = MCConnector(self.port)
+                    self.main_window.setCursor(Qt.ArrowCursor)
+                except Exception as e:
+                    self.main_window.setCursor(Qt.ArrowCursor)
+                    self.error_message_box.setText(
+                        "Session kann nicht gestartet werden, da keine serielle Verbindung mit dem Port kreiert werden kann, wähle ein gültiges Port im Verbindungsfenster aus.")
+                    self.error_message_box.show()
+            return
+
         self.run_window.show()
         self.main_window.start_button.setEnabled(False)
         self.timer.start()
@@ -90,5 +116,11 @@ class Controller:
         except Exception as e:
             pass
 
-    def set_microcontroller(self, port):
-        self.mc_connector = MCConnector(port)
+    def set_microcontroller(self):
+        self.port = self.connect_dialog.combo_box.currentText()
+
+
+    def insert_ports_to_combobox(self):
+        combo_box = self.connect_dialog.combo_box
+        combo_box.clear()
+        combo_box.addItems(MicroController.get_available_ports())
