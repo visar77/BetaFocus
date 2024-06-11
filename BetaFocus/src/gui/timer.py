@@ -31,12 +31,14 @@ class Timer:
 
     def count(self):
         while not self.stopped:
+            time.sleep(0.05)
             start = time.monotonic()
             if self.started:
                 until_now: float = self.passed
             else:
                 until_now: float = 0
             while self.running:
+                time.sleep(0.05)
                 self.passed = time.monotonic() - start + until_now
                 self.time_label.setText(self.format_time_string())
         self.passed = 0

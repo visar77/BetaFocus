@@ -1,12 +1,11 @@
 from threading import Thread
 
-from PyQt5.Qt import QApplication
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox
 
-from .timer import Timer
 from api.microcontroller import *
 from .data import Archive, Session
+from .timer import Timer
 from .view import MainWindow
 
 
@@ -30,6 +29,8 @@ class Controller:
         self.timer = Timer(self.run_window.time_label)
         self.timer_thread = Thread(target=self.timer.count)
 
+        self.session_thread = None
+
         # error message box
         self.error_message_box = QMessageBox(parent=self.main_window)
         self.error_message_box.setWindowTitle("BetaFocus - Fehlermeldung")
@@ -52,8 +53,8 @@ class Controller:
 
     def start_session(self):
         """
-        handles the view changes upon session start;
-        launches the stopwatch in a dedicated thread
+        handles the view changes upon session start launches the stopwatch in a dedicated thread and the
+        reading of values of the controller in another thread.
         """
         if self.mc_connector is None:
             if self.port is None:
@@ -77,30 +78,24 @@ class Controller:
         self.timer.start()
         if not self.timer_thread.is_alive():
             self.timer_thread = Thread(target=self.timer.count)
+
+        if self.session_thread is None or not self.session_thread.is_alive():
+            self.session_thread = Thread(target=self.mc_connector.start_session)
+
         self.timer_thread.start()
-        # Später können wir die try und catches entfernen, wenn mc_connector den richtigen Port bekommt
-        try:
-            self.mc_connector.start_session()
-        except Exception as e:
-            pass
+        self.session_thread.start()
 
     def pause_session(self):
         self.timer.pause()
+        self.mc_connector.pause_session()
         self.run_window.pause_button.hide()
         self.run_window.resume_button.show()
-        try:
-            self.mc_connector.pause_session()
-        except Exception as e:
-            pass
 
     def resume_session(self):
         self.timer.resume()
+        self.mc_connector.resume_session()
         self.run_window.resume_button.hide()
         self.run_window.pause_button.show()
-        try:
-            self.mc_connector.resume_session()
-        except Exception as e:
-            pass
 
     def stop_session(self):
         # Reset state of run buttons
@@ -110,15 +105,11 @@ class Controller:
         self.eval_window.show()
         self.main_window.start_button.setEnabled(True)
         self.timer.stop()
-        try:
-            self.mc_connector.stop_session()
-            self.session.set_path(self.mc_connector.last_session_path())
-        except Exception as e:
-            pass
+        self.mc_connector.stop_session()
+        self.session.set_path(self.mc_connector.last_session_path())
 
     def set_microcontroller(self):
         self.port = self.connect_dialog.combo_box.currentText()
-
 
     def insert_ports_to_combobox(self):
         combo_box = self.connect_dialog.combo_box
