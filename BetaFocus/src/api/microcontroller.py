@@ -45,7 +45,7 @@ class MicroController:
         Reads the last package from the serial connection.
         :return: string, the last package in CSV format OR None if no package was found
         """
-        while True:
+        while self.is_open():
             line = str(self.__ser.readline())
             if line == "b''" or line == '':  # This means readLine went to timeout
                 break
@@ -168,26 +168,25 @@ class MCConnector:
 
         path = os.path.join(up_dir(up_dir(up_dir(os.path.realpath(__file__)))), "data")
         file_name = rf"session_{self.session_date}.csv"
-        path = os.path.join(path, file_name)
-
+        file_path = os.path.join(path, file_name)
         # Write a session csv
         header_session_line = "TIMERTIME;TIMESTAMP;POOR_SIGNAL_QUALITY;ATTENTION;MEDITATION;DELTA;THETA;LOW ALPHA;HIGH ALPHA;LOW BETA;HIGH BETA;LOW GAMMA; MID GAMMA;RAW WAVE DATA\n"
-        with open(path, "w+") as f:
+        with open(file_path, "w+") as f:
             f.write(header_session_line)
             for pack in self.__packages:
                 f.write(pack + "\n")
 
-        session_csv_path = os.path.join(os.path.dirname(path), "sessions.csv")
+        session_csv_path = os.path.join(path, "sessions.csv")
 
         # Add to sessions.csv or create session.csv
         header_line = "INDEX;DATE;FILE_NAME;TIMESTAMP_OF_FIRST_VALID_PACKAGE;TIMESTAMP_OF_LAST_VALID_PACKAGE\n"
         if not os.path.exists(session_csv_path):
-            with open("../../data/sessions.csv", "a+") as f:
+            with open(session_csv_path, "a+") as f:
                 f.write(header_line)
 
-        with open(session_csv_path, "w+") as f:
+        with open(session_csv_path, "r+") as f:
             lines = f.readlines()
-            if not lines:  # lines is empty
+            if not lines:  # if session.csv is empty, which shouldn't happen
                 f.write(header_line)
                 index = 0
             else:
@@ -253,5 +252,6 @@ class MCConnector:
         Closes the connection.
         :return:
         """
-        self.__arduino.close()
         self.open = False
+        time.sleep(0.050)   # Hack for concurrency issues
+        self.__arduino.close()
