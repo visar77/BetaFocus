@@ -202,18 +202,18 @@ class MCConnector:
                     index = 0
                 else:
                     index = int(index) + 1
-
-        with open(session_csv_path, "a+") as f:
-            date = file_name[8:-4]  # cutting session_ and .csv out
-            i = 0
-            while self.__packages[i].split(";")[1] != "" and i < len(self.__packages) - 1:
-                i += 1
-            date_of_first_package = self.__packages[i].split(";")[1]
-            i = -1
-            while self.__packages[i].split(";")[1] != "" and i > 0:
-                i -= 1
-            date_of_last_package = self.__packages[i].split(";")[1]
-            f.write(f"{index};{date};{file_name};{date_of_first_package};{date_of_last_package}\n")
+        if len(self.__packages) > 0:
+            with open(session_csv_path, "a+") as f:
+                date = file_name[8:-4]  # cutting session_ and .csv out
+                i = 0
+                while self.__packages[i].split(";")[1] != "" and i < len(self.__packages) - 1:
+                    i += 1
+                date_of_first_package = self.__packages[i].split(";")[1]
+                i = -1
+                while self.__packages[i].split(";")[1] != "" and i > 0:
+                    i -= 1
+                date_of_last_package = self.__packages[i].split(";")[1]
+                f.write(f"{index};{date};{file_name};{date_of_first_package};{date_of_last_package}\n")
 
         self.__packages = []
         self.session_date = None
