@@ -110,6 +110,15 @@ class Controller:
 
     def set_microcontroller(self):
         self.port = self.connect_dialog.combo_box.currentText()
+        try:
+            self.connect_dialog.setCursor(Qt.WaitCursor)
+            self.mc_connector = MCConnector(self.port)
+            self.connect_dialog.setCursor(Qt.ArrowCursor)
+        except Exception as e:
+            self.connect_dialog.setCursor(Qt.ArrowCursor)
+            self.error_message_box.setText(
+                "Session kann nicht gestartet werden, da keine serielle Verbindung mit dem Port kreiert werden kann, wähle ein gültiges Port im Verbindungsfenster aus.")
+            self.error_message_box.show()
 
     def insert_ports_to_combobox(self):
         combo_box = self.connect_dialog.combo_box
