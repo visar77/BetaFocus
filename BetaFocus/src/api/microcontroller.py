@@ -1,9 +1,8 @@
-import glob
 import os
 import sys
 import time
-from os.path import dirname as up_dir
 from datetime import datetime, timezone
+from os.path import dirname as up_dir
 
 import serial.tools.list_ports
 
@@ -46,7 +45,11 @@ class MicroController:
         :return: string, the last package in CSV format OR None if no package was found
         """
         while self.is_open():
-            line = str(self.__ser.readline())
+            try:
+                line = str(self.__ser.readline())
+            except Exception as e:
+                self.close()
+                print("Can't read from serial port because of ", e)
             if line == "b''" or line == '':  # This means readLine went to timeout
                 break
             if "CSV" in line:
