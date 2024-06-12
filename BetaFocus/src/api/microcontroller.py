@@ -174,6 +174,10 @@ class MCConnector:
         file_path = os.path.join(path, file_name)
         # Write a session csv
         header_session_line = "TIMERTIME;TIMESTAMP;POOR_SIGNAL_QUALITY;ATTENTION;MEDITATION;DELTA;THETA;LOW ALPHA;HIGH ALPHA;LOW BETA;HIGH BETA;LOW GAMMA; MID GAMMA;RAW WAVE DATA\n"
+
+        if not os.path.exists(path):
+            os.makedirs(path)
+
         with open(file_path, "w+") as f:
             f.write(header_session_line)
             for pack in self.__packages:
