@@ -59,7 +59,7 @@ class Controller:
         if self.mc_connector is None:
             if self.port is None:
                 self.error_message_box.setText(
-                    "Session kann nicht gestartet werden, da kein Port ausgewählt wurde. Wähle bitte ein Port im Verbindungsfenster aus.")
+                    "Session kann nicht gestartet werden, da kein Port ausgewählt wurde. Wähle bitte einen Port im Verbindungsfenster aus.")
                 self.error_message_box.show()
             else:
                 try:
@@ -69,7 +69,7 @@ class Controller:
                 except Exception as e:
                     self.main_window.setCursor(Qt.ArrowCursor)
                     self.error_message_box.setText(
-                        "Session kann nicht gestartet werden, da keine serielle Verbindung mit dem Port kreiert werden kann, wähle ein gültiges Port im Verbindungsfenster aus.")
+                        "Session kann nicht gestartet werden, da keine serielle Verbindung mit dem Port kreiert werden kann, wähle einen gültigen Port im Verbindungsfenster aus.")
                     self.error_message_box.show()
             return
 
@@ -102,11 +102,11 @@ class Controller:
         self.run_window.resume_button.hide()
         self.run_window.pause_button.show()
 
-        self.eval_window.show()
         self.main_window.start_button.setEnabled(True)
         self.timer.stop()
         self.mc_connector.stop_session()
         self.session.set_path(self.mc_connector.last_session_path())
+        self.eval_window.show()
 
     def set_microcontroller(self):
         self.port = self.connect_dialog.combo_box.currentText()
@@ -117,7 +117,7 @@ class Controller:
         except Exception as e:
             self.connect_dialog.setCursor(Qt.ArrowCursor)
             self.error_message_box.setText(
-                "Session kann nicht gestartet werden, da keine serielle Verbindung mit dem Port kreiert werden kann, wähle ein gültiges Port im Verbindungsfenster aus.")
+                "Session kann nicht gestartet werden, da keine serielle Verbindung mit dem Port kreiert werden kann, wähle einen gültigen Port im Verbindungsfenster aus.")
             self.error_message_box.show()
 
     def insert_ports_to_combobox(self):
