@@ -31,14 +31,12 @@ class Timer:
 
     def count(self):
         while not self.stopped:
-            time.sleep(0.05)
             start = time.monotonic()
             if self.started:
                 until_now: float = self.passed
             else:
                 until_now: float = 0
             while self.running:
-                time.sleep(0.05)
                 self.passed = time.monotonic() - start + until_now
                 self.time_label.setText(self.format_time_string())
         self.passed = 0
@@ -47,4 +45,4 @@ class Timer:
         secs: float = self.passed % 60
         mins: float = self.passed // 60
         hours: float = mins // 60
-        return f"{int(hours):02d}:{int(mins):02d}:{int(secs):02d}:{int((self.passed % 1) * 100):02d}"
+        return f"{int(hours):02d}:{int(mins):02d}:{int(secs):02d}"
