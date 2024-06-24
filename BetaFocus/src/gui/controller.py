@@ -42,15 +42,15 @@ class Controller:
         self.archive = Archive()
         self.session = Session()
         # add functionalities to all buttons
-        self.connect()
+        self.connect_elements()
 
-    def connect(self):
-        self.connect_dialog.accepted.connect(self.set_microcontroller)
-        self.connect_dialog_button.clicked.connect(self.insert_ports_to_combobox)
-        self.main_window.start_button.clicked.connect(self.start_session)
-        self.run_window.pause_button.clicked.connect(self.pause_session)
-        self.run_window.resume_button.clicked.connect(self.resume_session)
-        self.run_window.close_signal.connect(self.stop_session)
+    def connect_elements(self):
+        self.connect_dialog.accepted.connect_elements(self.set_microcontroller)
+        self.connect_dialog_button.clicked.connect_elements(self.insert_ports_to_combobox)
+        self.main_window.start_button.clicked.connect_elements(self.start_session)
+        self.run_window.pause_button.clicked.connect_elements(self.pause_session)
+        self.run_window.resume_button.clicked.connect_elements(self.resume_session)
+        self.run_window.close_signal.connect_elements(self.stop_session)
 
     def start_session(self):
         """

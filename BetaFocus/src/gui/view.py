@@ -15,6 +15,7 @@ from matplotlib.figure import Figure
 from .ui.ui_mainwindow import Ui_MainWindow
 from .ui.ui_runwindow import Ui_RunWindow
 from .ui.ui_connectdialog import Ui_ConnectDialog
+from .ui.ui_auswertung import Ui_Form
 
 
 class MarkDownViewer(QWidget):
@@ -90,7 +91,9 @@ class EvalWindow(QWidget):
 
     def __init__(self):
         super(EvalWindow, self).__init__()
-        self.setFixedSize(920, 620)
+        self.ui = Ui_Form()
+        self.ui.setupUi(self)
+        self.setWindowTitle("BetaFocus - Timer")
 
 
 class RunWindow(QWidget):
@@ -122,7 +125,7 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         self.main_window_ui = Ui_MainWindow()
         self.main_window_ui.setupUi(self)
-        self.center()
+        self.center_window()
         # triangular start button
         self.start_button = self.main_window_ui.start_button
         # statistics button at the bottom right
@@ -154,7 +157,7 @@ class MainWindow(QMainWindow):
         self.help_button.clicked.connect(self.help_window.show)
         self.show()
 
-    def center(self):
+    def center_window(self):
         """
         centers the main window according to the desktop size of the device used
         """
