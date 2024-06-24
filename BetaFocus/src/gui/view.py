@@ -91,14 +91,6 @@ class EvalWindow(QWidget):
     def __init__(self):
         super(EvalWindow, self).__init__()
         self.setFixedSize(920, 620)
-        self.setWindowTitle("BetaFocus - Auswertung")
-        self.setStyleSheet("background-color: black;")
-        layout = QGridLayout()
-        layout.setAlignment(Qt.AlignHCenter)
-        layout.setContentsMargins(20, 40, 20, 20)
-        self.upper_canvas = MplCanvas(self, width=5, height=4, dpi=100)
-        self.upper_canvas.axes.plot([0, 1, 2, 3, 4], [10, 1, 20, 3, 40])
-        layout.addWidget(self.upper_canvas, 0, 0, 1, 1)
 
 
 class RunWindow(QWidget):
