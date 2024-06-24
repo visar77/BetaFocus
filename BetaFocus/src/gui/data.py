@@ -26,6 +26,10 @@ class Session:
         self.data = pd.DataFrame()
         self.x_vals = []
         self.y_vals = []
+        self.mean = 0
+        self.max = 0
+        self.upper = 60
+        self.lower = 40
 
     def set_path(self, path):
         self.path = path
@@ -37,7 +41,13 @@ class Session:
             print("yes")
 
     def get_x_vals(self):
-        pass
+        return self.data['TIMESTAMP'].tolist()
 
     def get_y_vals(self):
-        pass
+        return self.data['ATTENTION'].tolist()
+
+    def get_mean(self):
+        return self.data['ATTENTION'].mean()
+
+    def get_max(self):
+        return self.data['ATTENTION'].max()
