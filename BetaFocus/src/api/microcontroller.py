@@ -175,7 +175,7 @@ class MCConnector:
         # Write a session csv
         header_session_line = "TIMERTIME;TIMESTAMP;POOR_SIGNAL_QUALITY;ATTENTION;MEDITATION;DELTA;THETA;LOW ALPHA;HIGH ALPHA;LOW BETA;HIGH BETA;LOW GAMMA; MID GAMMA;RAW WAVE DATA\n"
 
-        if not os.path.exists(path):
+        if not os.path.isdir(path):
             os.makedirs(path)
 
         with open(file_path, "w+") as f:
@@ -245,10 +245,12 @@ class MCConnector:
         """
         path = os.path.join(up_dir(up_dir(up_dir(os.path.realpath(__file__)))), "data")
 
-        session_csv_path = os.path.join(os.path.dirname(path), "sessions.csv")
+        session_csv_path = os.path.join(path, "sessions.csv")
+        print(session_csv_path)
 
         with open(session_csv_path, "w+") as f:
             lines = f.readlines()
+            print(lines)
             last_session_file_name = lines[-1].split(";")[2]
 
         path_to_last_session = os.path.join(path, last_session_file_name)
