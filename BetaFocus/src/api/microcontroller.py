@@ -115,7 +115,7 @@ class MCConnector:
     """
     Represents the MicroController Connector. This class is used to start and stop a session. It also handles the
     pausing and resuming of a session. Sessions are saved in the data folder with the format
-    session_yy-mm-dd_hh-mm-ss-fff.csv.
+    session_yy-mm-dd_hh-mm-ss-ffffff.csv.
     """
 
     def __init__(self, port, baudrate=9600):
@@ -125,21 +125,22 @@ class MCConnector:
         :param baudrate: baudrate (default: 9600)
         """
         self.__arduino = MicroController(port, baudrate)
-        self.open = self.__arduino.is_open()
         self.__packages = []
         self.__pause = False
-        self.timer_start = None
-        self.paused_time = 0
-        self.session_date = None
+        self.__timer_start = None
+        self.__paused_time = 0.0
+        self.__session_date = None
+
+        self.open = self.__arduino.is_open()
 
     def start_session(self):
         """
         Starts a session and logs the data in a list.
         :return:
         """
-        self.session_date = datetime.now().strftime("%y-%m-%d_%H-%M-%S-%f")
+        self.__session_date = datetime.now().strftime("%y-%m-%d_%H-%M-%S-%f")
 
-        self.timer_start = time.monotonic()
+        self.__timer_start = time.monotonic()
         self.open = self.__arduino.is_open()
 
         if not self.open:
@@ -156,7 +157,7 @@ class MCConnector:
                 print("No package found")
                 package = ";;;;;;;;;;;;"
 
-            package = str(self.paused_time + time.monotonic() - self.timer_start) + ";" + package
+            package = str(self.__paused_time + time.monotonic() - self.__timer_start) + ";" + package
             print("package received: ", package)
             self.__packages.append(package)
 
@@ -170,10 +171,10 @@ class MCConnector:
         self.close()  # Close the connection and stops the session logging done by start_session
 
         path = os.path.join(up_dir(up_dir(up_dir(os.path.realpath(__file__)))), "data")
-        file_name = rf"session_{self.session_date}.csv"
+        file_name = rf"session_{self.__session_date}.csv"
         file_path = os.path.join(path, file_name)
         # Write a session csv
-        header_session_line = "TIMERTIME;TIMESTAMP;POOR_SIGNAL_QUALITY;ATTENTION;MEDITATION;DELTA;THETA;LOW ALPHA;HIGH ALPHA;LOW BETA;HIGH BETA;LOW GAMMA; MID GAMMA;RAW WAVE DATA\n"
+        header_session_line = "TIMERTIME;TIMESTAMP;SIGNAL_QUALITY;ATTENTION;MEDITATION;DELTA;THETA;LOW ALPHA;HIGH ALPHA;LOW BETA;HIGH BETA;LOW GAMMA; MID GAMMA;RAW WAVE DATA\n"
 
         if not os.path.isdir(path):
             os.makedirs(path)
@@ -216,8 +217,8 @@ class MCConnector:
                 f.write(f"{index};{date};{file_name};{date_of_first_package};{date_of_last_package}\n")
 
         self.__packages = []
-        self.session_date = None
-        self.timer_start = None
+        self.__session_date = None
+        self.__timer_start = None
 
     def pause_session(self):
         """
@@ -226,7 +227,7 @@ class MCConnector:
         """
         print("PAUSED")
         self.__pause = True
-        self.paused_time += time.monotonic() - self.timer_start
+        self.__paused_time += time.monotonic() - self.__timer_start
 
     def resume_session(self):
         """
@@ -235,12 +236,12 @@ class MCConnector:
         """
         print("RESUMED")
         self.__pause = False
-        self.timer_start = time.monotonic()
+        self.__timer_start = time.monotonic()
 
     @staticmethod
     def last_session_path():
         """
-        Returns path to last session taken
+        Returns path to the last session taken
         :return: str
         """
         path = os.path.join(up_dir(up_dir(up_dir(os.path.realpath(__file__)))), "data")
