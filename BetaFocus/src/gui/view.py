@@ -9,13 +9,11 @@ from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import Qt, QSize, pyqtSignal
 from PyQt5.QtCore import QUrl
 from PyQt5.QtWebEngineWidgets import QWebEngineView
-from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
-from matplotlib.figure import Figure
 
 from .ui.ui_mainwindow import Ui_MainWindow
 from .ui.ui_runwindow import Ui_RunWindow
 from .ui.ui_connectdialog import Ui_ConnectDialog
-from .ui.ui_auswertung import Ui_Eval
+from .ui.ui_eval import Ui_Eval
 from .ui.ui_archive import Ui_Archive
 
 
