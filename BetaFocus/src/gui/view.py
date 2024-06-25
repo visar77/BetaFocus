@@ -15,7 +15,8 @@ from matplotlib.figure import Figure
 from .ui.ui_mainwindow import Ui_MainWindow
 from .ui.ui_runwindow import Ui_RunWindow
 from .ui.ui_connectdialog import Ui_ConnectDialog
-from .ui.ui_auswertung import Ui_Form
+from .ui.ui_auswertung import Ui_Eval
+from .ui.ui_archive import Ui_Archive
 
 
 class MarkDownViewer(QWidget):
@@ -55,18 +56,6 @@ class PDFViewer(QWebEngineView):
         self.load(QUrl(f'file://{os.path.abspath(path)}'))
 
 
-class StatsWindow(QWidget):
-    def __init__(self):
-        super(StatsWindow, self).__init__()
-        self.setFixedSize(920, 620)
-        self.setWindowTitle("BetaFocus - Archiv")
-        self.setStyleSheet("background-color: black;")
-        layout = QGridLayout()
-        layout.setAlignment(Qt.AlignHCenter)
-        layout.setContentsMargins(20, 40, 20, 20)
-        self.setLayout(layout)
-
-
 class ConnectDialog(QDialog):
 
     def __init__(self):
@@ -79,21 +68,21 @@ class ConnectDialog(QDialog):
         self.hide()
 
 
-class MplCanvas(FigureCanvasQTAgg):
-
-    def __init__(self, parent=None, width=5, height=4, dpi=100):
-        fig = Figure(figsize=(width, height), dpi=dpi)
-        self.axes = fig.add_subplot(111)
-        super(MplCanvas, self).__init__(fig)
+class StatsWindow(QWidget):
+    def __init__(self):
+        super(StatsWindow, self).__init__()
+        self.ui = Ui_Archive()
+        self.ui.setupUi(self)
+        self.setWindowTitle("BetaFocus - Archiv")
 
 
 class EvalWindow(QWidget):
 
     def __init__(self):
         super(EvalWindow, self).__init__()
-        self.ui = Ui_Form()
+        self.ui = Ui_Eval()
         self.ui.setupUi(self)
-        self.setWindowTitle("BetaFocus - Timer")
+        self.setWindowTitle("BetaFocus - Auswertung")
 
 
 class RunWindow(QWidget):
@@ -101,18 +90,18 @@ class RunWindow(QWidget):
 
     def __init__(self):
         super(RunWindow, self).__init__()
-        self.run_window_ui = Ui_RunWindow()
-        self.run_window_ui.setupUi(self)
+        self.ui = Ui_RunWindow()
+        self.ui.setupUi(self)
         self.setWindowTitle("BetaFocus - Timer")
         # label at the top of the window
-        self.label = self.run_window_ui.label
+        self.label = self.ui.label
         # label that displays the time passed
-        self.time_label = self.run_window_ui.time_label
+        self.time_label = self.ui.time_label
         # set control buttons
-        self.stop_button = self.run_window_ui.stop_button
+        self.stop_button = self.ui.stop_button
         self.stop_button.clicked.connect(self.close)
-        self.pause_button = self.run_window_ui.pause_button
-        self.resume_button = self.run_window_ui.resume_button
+        self.pause_button = self.ui.pause_button
+        self.resume_button = self.ui.resume_button
         self.resume_button.hide()  # needs to be hidden, only shown when
 
     def closeEvent(self, a0):
@@ -123,25 +112,25 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super(MainWindow, self).__init__()
-        self.main_window_ui = Ui_MainWindow()
-        self.main_window_ui.setupUi(self)
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
         self.center_window()
         # triangular start button
-        self.start_button = self.main_window_ui.start_button
+        self.start_button = self.ui.start_button
         # statistics button at the bottom right
-        self.stats_button = self.main_window_ui.stats_button
+        self.stats_button = self.ui.stats_button
         pic = QPixmap("./gui/images/stats.png")
         self.stats_button.setIcon(QIcon(pic))
         self.stats_button.setIconSize(QSize(20, 20))
         # connect button at the bottom left
-        self.connect_button = self.main_window_ui.connect_button
+        self.connect_button = self.ui.connect_button
         pic = QPixmap("./gui/images/connect.jpeg")
         self.connect_button.setIcon(QIcon(pic))
         self.connect_button.setIconSize(QSize(20, 20))
         # information button in the top left corner
-        self.info_button = self.main_window_ui.info_button
+        self.info_button = self.ui.info_button
         # help button in the top right corner
-        self.help_button = self.main_window_ui.help_button
+        self.help_button = self.ui.help_button
         # other windows are children of main window
         self.run_window = RunWindow()
         self.eval_window = EvalWindow()

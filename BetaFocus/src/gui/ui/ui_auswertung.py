@@ -13,10 +13,10 @@ from PyQt5.QtWidgets import *  # type: ignore
 from pyqtgraph import PlotWidget
 
 
-class Ui_Form(object):
+class Ui_Eval(object):
     def setupUi(self, Form):
         if not Form.objectName():
-            Form.setObjectName(u"Form")
+            Form.setObjectName(u"Eval")
         Form.resize(920, 620)
         sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
