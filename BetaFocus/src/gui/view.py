@@ -72,6 +72,16 @@ class StatsWindow(QWidget):
         self.ui = Ui_Archive()
         self.ui.setupUi(self)
         self.setWindowTitle("BetaFocus - Archiv")
+        # canvas
+        self.plotWidget = self.ui.widget1
+        # labels
+        self.label1 = self.ui.label_1
+        self.label2 = self.ui.label_2
+        self.label3 = self.ui.label_3
+        self.label4 = self.ui.label_4
+        self.label5 = self.ui.label_5
+        # button
+        self.start_button = self.ui.pushButton
 
 
 class EvalWindow(QWidget):
@@ -81,6 +91,18 @@ class EvalWindow(QWidget):
         self.ui = Ui_Eval()
         self.ui.setupUi(self)
         self.setWindowTitle("BetaFocus - Auswertung")
+        # top canvas
+        self.plotWidget1 = self.ui.canvas_1
+        # bottom canvas
+        self.plotWidget2 = self.ui.canvas_2
+        # labels
+        self.time_label = self.ui.label_r1
+        self.max_label = self.ui.label_r2
+        # buttons
+        self.archiv_button = self.ui.archiv_button
+        self.fertig_button = self.ui.pushButton
+        # line edit
+        self.line_edit = self.ui.lineEdit
 
 
 class RunWindow(QWidget):
@@ -135,7 +157,6 @@ class MainWindow(QMainWindow):
         self.connect_dialog = ConnectDialog()
         self.connect_button.clicked.connect(self.connect_dialog.show)
         self.stats_window = StatsWindow()
-        self.stats_button.clicked.connect(self.stats_window.show)
         self.info_window = MarkDownViewer(os.path.join(os.path.dirname(os.path.dirname((os.getcwd()))), "README.md"),
                                           "Info")
         self.info_button.clicked.connect(self.info_window.show)
