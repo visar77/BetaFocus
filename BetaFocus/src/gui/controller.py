@@ -2,6 +2,8 @@ import time
 
 from threading import Thread
 
+import pyqtgraph
+from PyQt5 import QtCore
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QLabel
 
@@ -51,6 +53,10 @@ class Controller:
         self.run_window.pause_button.clicked.connect(self.pause_session)
         self.run_window.resume_button.clicked.connect(self.resume_session)
         self.run_window.close_signal.connect(self.stop_session)
+        self.eval_window.fertig_button.clicked.connect(self.submit_session_name)
+        self.eval_window.archiv_button.clicked.connect(self.prepare_archive_window)
+        self.main_window.stats_button.clicked.connect(self.prepare_archive_window)
+        self.stats_window.start_button.clicked.connect(self.start_session)
 
     def start_session(self):
         """
@@ -75,6 +81,8 @@ class Controller:
             return
 
         self.run_window.show()
+        self.eval_window.close()
+        self.stats_window.close()
         self.main_window.start_button.setEnabled(False)
         self.timer.start()
         if not self.timer_thread.is_alive():
@@ -104,10 +112,10 @@ class Controller:
         self.run_window.pause_button.show()
 
         self.main_window.start_button.setEnabled(True)
+        self.eval_window.time_label.setText(self.timer.get_format_time_string())
         self.timer.stop()
         self.mc_connector.stop_session()
-        self.session.set_path(self.mc_connector.last_session_path())
-        self.eval_window.show()
+        self.prepare_eval_window(self.mc_connector.last_session_path())
 
     def set_microcontroller(self):
         self.port = self.connect_dialog.combo_box.currentText()
@@ -125,6 +133,46 @@ class Controller:
         combo_box = self.connect_dialog.combo_box
         combo_box.clear()
         combo_box.addItems(MicroController.get_available_ports())
+
+    def prepare_eval_window(self, path):
+        self.session.set_path(path)
+        self.archive.init_data()
+        red_pen = pyqtgraph.mkPen(color=(255, 0, 0), style=Qt.DashLine)
+        green_pen = pyqtgraph.mkPen(color=(0, 128, 0), style=Qt.DashLine)
+        # top canvas
+        self.eval_window.plotWidget1.plot(self.session.get_x_vals(), self.session.get_y_vals())
+        self.eval_window.plotWidget1.plot([self.session.get_lower() for _ in range(len(self.session.get_x_vals()))],
+                                          pen=red_pen)
+        self.eval_window.plotWidget1.plot([self.session.get_upper() for _ in range(len(self.session.get_x_vals()))],
+                                          pen=green_pen)
+        # bottom canvas
+        self.eval_window.plotWidget2.plot(self.archive.get_x_data(), self.archive.get_mean_vals())
+        self.eval_window.plotWidget2.plot([self.session.get_lower() for _ in range(len(self.session.get_x_vals()))],
+                                          pen=red_pen)
+        self.eval_window.plotWidget2.plot([self.session.get_upper() for _ in range(len(self.session.get_x_vals()))],
+                                          pen=green_pen)
+        self.eval_window.max_label.setText(str(self.session.get_max()))
+        self.eval_window.show()
+
+    def submit_session_name(self):
+        if len(self.eval_window.line_edit.text()) > 0:
+            name = self.eval_window.line_edit.text()
+            self.eval_window.line_edit.setText("")
+            self.session.set_session_name(name)
+
+    def prepare_archive_window(self):
+        sessions = self.archive.get_five()
+        sessions.reverse()
+        if len(sessions) < 5:
+            for _ in range(5 - len(sessions)):
+                sessions.append("-")
+        self.stats_window.label1.setText(sessions[0])
+        self.stats_window.label2.setText(sessions[1])
+        self.stats_window.label3.setText(sessions[2])
+        self.stats_window.label4.setText(sessions[3])
+        self.stats_window.label5.setText(sessions[4])
+        self.stats_window.plotWidget.plot(self.archive.get_x_data(), self.archive.get_y_data(), symbol='x')
+        self.stats_window.show()
 
 
 class Timer:
@@ -162,10 +210,10 @@ class Timer:
                 until_now: float = 0
             while self.running:
                 self.passed = time.monotonic() - start + until_now
-                self.time_label.setText(self.format_time_string())
+                self.time_label.setText(self.get_format_time_string())
         self.passed = 0
 
-    def format_time_string(self) -> str:
+    def get_format_time_string(self) -> str:
         secs: float = self.passed % 60
         mins: float = self.passed // 60
         hours: float = mins // 60
