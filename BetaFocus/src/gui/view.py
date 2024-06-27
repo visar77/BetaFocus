@@ -22,6 +22,9 @@ class MarkDownViewer(QWidget):
     def __init__(self, path, title):
         super().__init__()
         self.setFixedSize(920, 620)
+        path_to_icon = os.path.join(os.path.dirname((__file__)), "images", "logo.png")
+        my_icon = QIcon(path_to_icon)
+        self.setWindowIcon(my_icon)
         self.setWindowTitle(f"BetaFocus - {title}")
         self.textedit = QTextEdit()
         self.textedit.setReadOnly(True)
@@ -60,6 +63,9 @@ class ConnectDialog(QDialog):
         super(ConnectDialog, self).__init__()
         self.ui = Ui_ConnectDialog()
         self.ui.setupUi(self)
+        path_to_icon = os.path.join(os.path.dirname((__file__)), "images", "logo.png")
+        my_icon = QIcon(path_to_icon)
+        self.setWindowIcon(my_icon)
         self.combo_box = self.ui.combo_box
 
     def reject(self):
@@ -73,6 +79,9 @@ class StatsWindow(QWidget):
         super(StatsWindow, self).__init__()
         self.ui = Ui_Archive()
         self.ui.setupUi(self)
+        path_to_icon = os.path.join(os.path.dirname((__file__)), "images", "logo.png")
+        my_icon = QIcon(path_to_icon)
+        self.setWindowIcon(my_icon)
         self.setWindowTitle("BetaFocus - Archiv")
         # canvas
         self.plotWidget = self.ui.widget1
@@ -98,6 +107,9 @@ class EvalWindow(QWidget):
         super(EvalWindow, self).__init__(parent)
         self.ui = Ui_Eval()
         self.ui.setupUi(self)
+        path_to_icon = os.path.join(os.path.dirname((__file__)), "images", "logo.png")
+        my_icon = QIcon(path_to_icon)
+        self.setWindowIcon(my_icon)
         self.setWindowTitle("BetaFocus - Auswertung")
         # top canvas
         self.plotWidget1 = self.ui.canvas_1
@@ -120,6 +132,9 @@ class RunWindow(QWidget):
         super(RunWindow, self).__init__()
         self.ui = Ui_RunWindow()
         self.ui.setupUi(self)
+        path_to_icon = os.path.join(os.path.dirname((__file__)), "images", "logo.png")
+        my_icon = QIcon(path_to_icon)
+        self.setWindowIcon(my_icon)
         self.setWindowTitle("BetaFocus - Timer")
         # label at the top of the window
         self.label = self.ui.label
@@ -143,7 +158,13 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+
+        path_to_icon = os.path.join(os.path.dirname((__file__)), "images", "logo.png")
+        my_icon = QIcon(path_to_icon)
+        self.setWindowIcon(my_icon)
+
         self.center_window()
+
         # triangular start button
         self.start_button = self.ui.start_button
         # statistics button at the bottom right
