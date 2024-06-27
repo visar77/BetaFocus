@@ -1,8 +1,8 @@
-import os
-import sys
-import matplotlib
-
-matplotlib.use('Qt5Agg')
+from .ui.ui_mainwindow import Ui_MainWindow
+from .ui.ui_runwindow import Ui_RunWindow
+from .ui.ui_connectdialog import Ui_ConnectDialog
+from .ui.ui_eval import Ui_Eval
+from .ui.ui_archive import Ui_Archive
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon, QPixmap
@@ -10,11 +10,11 @@ from PyQt5.QtCore import Qt, QSize, pyqtSignal
 from PyQt5.QtCore import QUrl
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
-from .ui.ui_mainwindow import Ui_MainWindow
-from .ui.ui_runwindow import Ui_RunWindow
-from .ui.ui_connectdialog import Ui_ConnectDialog
-from .ui.ui_eval import Ui_Eval
-from .ui.ui_archive import Ui_Archive
+import os
+import sys
+import matplotlib
+
+matplotlib.use('Qt5Agg')
 
 
 class MarkDownViewer(QWidget):
@@ -22,7 +22,7 @@ class MarkDownViewer(QWidget):
     def __init__(self, path, title):
         super().__init__()
         self.setFixedSize(920, 620)
-        path_to_icon = os.path.join(os.path.dirname((__file__)), "images", "logo.png")
+        path_to_icon = os.path.join(os.path.dirname(__file__), "images", "logo.png")
         my_icon = QIcon(path_to_icon)
         self.setWindowIcon(my_icon)
         self.setWindowTitle(f"BetaFocus - {title}")
@@ -63,7 +63,7 @@ class ConnectDialog(QDialog):
         super(ConnectDialog, self).__init__()
         self.ui = Ui_ConnectDialog()
         self.ui.setupUi(self)
-        path_to_icon = os.path.join(os.path.dirname((__file__)), "images", "logo.png")
+        path_to_icon = os.path.join(os.path.dirname(__file__), "images", "logo.png")
         my_icon = QIcon(path_to_icon)
         self.setWindowIcon(my_icon)
         self.combo_box = self.ui.combo_box
@@ -79,7 +79,7 @@ class StatsWindow(QWidget):
         super(StatsWindow, self).__init__()
         self.ui = Ui_Archive()
         self.ui.setupUi(self)
-        path_to_icon = os.path.join(os.path.dirname((__file__)), "images", "logo.png")
+        path_to_icon = os.path.join(os.path.dirname(__file__), "images", "logo.png")
         my_icon = QIcon(path_to_icon)
         self.setWindowIcon(my_icon)
         self.setWindowTitle("BetaFocus - Archiv")
@@ -107,7 +107,7 @@ class EvalWindow(QWidget):
         super(EvalWindow, self).__init__(parent)
         self.ui = Ui_Eval()
         self.ui.setupUi(self)
-        path_to_icon = os.path.join(os.path.dirname((__file__)), "images", "logo.png")
+        path_to_icon = os.path.join(os.path.dirname(__file__), "images", "logo.png")
         my_icon = QIcon(path_to_icon)
         self.setWindowIcon(my_icon)
         self.setWindowTitle("BetaFocus - Auswertung")
@@ -132,7 +132,7 @@ class RunWindow(QWidget):
         super(RunWindow, self).__init__()
         self.ui = Ui_RunWindow()
         self.ui.setupUi(self)
-        path_to_icon = os.path.join(os.path.dirname((__file__)), "images", "logo.png")
+        path_to_icon = os.path.join(os.path.dirname(__file__), "images", "logo.png")
         my_icon = QIcon(path_to_icon)
         self.setWindowIcon(my_icon)
         self.setWindowTitle("BetaFocus - Timer")
@@ -159,7 +159,7 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        path_to_icon = os.path.join(os.path.dirname((__file__)), "images", "logo.png")
+        path_to_icon = os.path.join(os.path.dirname(__file__), "images", "logo.png")
         my_icon = QIcon(path_to_icon)
         self.setWindowIcon(my_icon)
 

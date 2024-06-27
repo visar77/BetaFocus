@@ -1,16 +1,12 @@
-import os.path
 import re
-import time
-
 from threading import Thread
 
 import pyqtgraph
-from PyQt5 import QtCore
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QLabel
 
 from api.microcontroller import *
-from .data import Archive, Session
+from .data import Archive
 from .view import MainWindow, EvalWindow
 
 
