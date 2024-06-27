@@ -45,12 +45,15 @@ class MicroController:
         :return: string, the last package in CSV format OR None if no package was found
         """
         while self.is_open():
+            line = None
             try:
                 line = str(self.__ser.readline())
             except Exception as e:
                 self.close()
                 print("Can't read from serial port because of ", e)
             if line == "b''" or line == '':  # This means readLine went to timeout
+                break
+            if line is None:
                 break
             if "CSV" in line:
                 s = line[7:-3]
@@ -131,7 +134,7 @@ class MCConnector:
         self.__paused_time = 0.0
         self.__session_date = None
 
-        self.open = self.__arduino.is_open()
+        self.receive = self.__arduino.is_open()
 
     def start_session(self):
         """
@@ -141,12 +144,15 @@ class MCConnector:
         self.__session_date = datetime.now().strftime("%y-%m-%d_%H-%M-%S-%f")
 
         self.__timer_start = time.monotonic()
-        self.open = self.__arduino.is_open()
 
-        if not self.open:
+        # Open serial connection explicitly
+        if not self.__arduino.is_open():
+            self.open()
+
+        if not self.receive:
             print("Connection not open! Session can't be started")
 
-        while self.open:
+        while self.receive:
             package = self.__arduino.last_package()
 
             if self.__pause:
@@ -168,11 +174,14 @@ class MCConnector:
         Stops the session and writes the data to a csv file.
         :return: path to csv file as string
         """
-        self.close()  # Close the connection and stops the session logging done by start_session
+        if self.__arduino.is_open():
+            self.close()  # Close the connection and stops the session logging done by start_session
 
+        # Paths to data folder, session csv and sessions csv
         path = os.path.join(up_dir(up_dir(up_dir(os.path.realpath(__file__)))), "data")
         file_name = rf"session_{self.__session_date}.csv"
         file_path = os.path.join(path, file_name)
+
         # Write a session csv
         header_session_line = "TIMERTIME;TIMESTAMP;SIGNAL_QUALITY;ATTENTION;MEDITATION;DELTA;THETA;LOW ALPHA;HIGH ALPHA;LOW BETA;HIGH BETA;LOW GAMMA; MID GAMMA;RAW WAVE DATA\n"
 
@@ -187,7 +196,8 @@ class MCConnector:
         session_csv_path = os.path.join(path, "sessions.csv")
 
         # Add to sessions.csv or create session.csv
-        header_line = "INDEX;DATE;FILE_NAME;TIMESTAMP_OF_FIRST_VALID_PACKAGE;TIMESTAMP_OF_LAST_VALID_PACKAGE\n"
+        header_line = "INDEX;DATE;FILE_NAME\n"
+
         if not os.path.exists(session_csv_path):
             with open(session_csv_path, "a+") as f:
                 f.write(header_line)
@@ -195,6 +205,7 @@ class MCConnector:
         with open(session_csv_path, "r+") as f:
             lines = f.readlines()
             if not lines:  # if session.csv is empty, which shouldn't happen
+                f.seek(0)
                 f.write(header_line)
                 index = 0
             else:
@@ -203,18 +214,12 @@ class MCConnector:
                     index = 0
                 else:
                     index = int(index) + 1
-        if len(self.__packages) > 0:
-            with open(session_csv_path, "a+") as f:
-                date = file_name[8:-4]  # cutting session_ and .csv out
-                i = 0
-                while self.__packages[i].split(";")[1] != "" and i < len(self.__packages) - 1:
-                    i += 1
-                date_of_first_package = self.__packages[i].split(";")[1]
-                i = -1
-                while self.__packages[i].split(";")[1] != "" and i > 0:
-                    i -= 1
-                date_of_last_package = self.__packages[i].split(";")[1]
-                f.write(f"{index};{date};{file_name};{date_of_first_package};{date_of_last_package}\n")
+
+        # Add session to sessions.csv
+        with open(session_csv_path, "a+") as f:
+            date = file_name[8:-4]  # cutting session_ and .csv out
+            file_name_without_csv = file_name[:-4]
+            f.write(f"{index};{date};{file_name_without_csv}\n")
 
         self.__packages = []
         self.__session_date = None
@@ -239,7 +244,7 @@ class MCConnector:
         self.__timer_start = time.monotonic()
 
     @staticmethod
-    def last_session_path():
+    def last_session_name():
         """
         Returns path to the last session taken
         :return: str
@@ -247,21 +252,25 @@ class MCConnector:
         path = os.path.join(up_dir(up_dir(up_dir(os.path.realpath(__file__)))), "data")
 
         session_csv_path = os.path.join(path, "sessions.csv")
-        print(session_csv_path)
 
-        with open(session_csv_path, "w+") as f:
+        with open(session_csv_path, "r") as f:
             lines = f.readlines()
-            print(lines)
-            last_session_file_name = lines[-1].split(";")[2]
+            last_session_file_name = lines[-1].split(";")[2][:-1]  # cutting \n out
 
-        path_to_last_session = os.path.join(path, last_session_file_name)
-        return path_to_last_session
+        return last_session_file_name
+
+    def open(self):
+        """
+        Opens the connection.
+        :return:
+        """
+        self.receive = True
+        self.__arduino.open()
 
     def close(self):
         """
         Closes the connection.
         :return:
         """
-        self.open = False
-        time.sleep(0.050)   # Hack for concurrency issues
+        self.receive = False
         self.__arduino.close()

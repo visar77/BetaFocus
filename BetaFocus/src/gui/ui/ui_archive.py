@@ -90,6 +90,29 @@ class Ui_Archive(object):
 
         self.gridLayout.addWidget(self.label_5, 4, 0, 1, 1)
 
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setContentsMargins(0, 0, 0,
+                                                 20)  # Add a bottom margin to bring the buttons closer to the labels
+        self.prev_button = QPushButton("<", self.widget)
+        self.prev_button.setObjectName(u"prev_button")
+        self.prev_button.setFont(font1)
+        self.prev_button.hide()
+        self.prev_button.setStyleSheet(u"color: white;")
+
+
+        self.horizontalLayout.addWidget(self.prev_button)
+
+        self.next_button = QPushButton(">", self.widget)
+        self.next_button.setObjectName(u"next_button")
+        self.next_button.setFont(font1)
+        self.next_button.setStyleSheet(u"color: white;")
+
+
+        self.horizontalLayout.addWidget(self.next_button)
+
+
+        self.gridLayout.addLayout(self.horizontalLayout, 5, 0, 1, 1)
+
         self.widget1 = PlotWidget(self.widget, axisItems={'bottom': DateAxisItem()})
         self.widget1.setObjectName(u"widget1")
         self.widget1.setBackground('black')

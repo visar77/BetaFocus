@@ -67,6 +67,8 @@ class ConnectDialog(QDialog):
 
 
 class StatsWindow(QWidget):
+    double_clicked = pyqtSignal(int)
+
     def __init__(self):
         super(StatsWindow, self).__init__()
         self.ui = Ui_Archive()
@@ -75,19 +77,25 @@ class StatsWindow(QWidget):
         # canvas
         self.plotWidget = self.ui.widget1
         # labels
-        self.label1 = self.ui.label_1
-        self.label2 = self.ui.label_2
-        self.label3 = self.ui.label_3
-        self.label4 = self.ui.label_4
-        self.label5 = self.ui.label_5
+        self.labels = [self.ui.label_1, self.ui.label_2, self.ui.label_3, self.ui.label_4, self.ui.label_5]
+        self.labels_font = [label.font() for label in self.labels]
         # button
         self.start_button = self.ui.pushButton
+        self.next_button = self.ui.next_button
+        self.prev_button = self.ui.prev_button
+
+    def mouseDoubleClickEvent(self, event):
+        # Check if the widget at the mouse position is one of the labels
+        child = self.childAt(event.pos())
+        if child in self.labels:
+            index = self.labels.index(child)
+            self.double_clicked.emit(index)
 
 
 class EvalWindow(QWidget):
 
-    def __init__(self):
-        super(EvalWindow, self).__init__()
+    def __init__(self, parent=None):
+        super(EvalWindow, self).__init__(parent)
         self.ui = Ui_Eval()
         self.ui.setupUi(self)
         self.setWindowTitle("BetaFocus - Auswertung")
@@ -123,8 +131,9 @@ class RunWindow(QWidget):
         self.pause_button = self.ui.pause_button
         self.resume_button = self.ui.resume_button
         self.resume_button.hide()  # needs to be hidden, only shown when
+        self.session_name = None
 
-    def closeEvent(self, a0):
+    def closeEvent(self, event):
         self.close_signal.emit()
 
 
@@ -154,6 +163,7 @@ class MainWindow(QMainWindow):
         # other windows are children of main window
         self.run_window = RunWindow()
         self.eval_window = EvalWindow()
+        self.eval_window.hide()
         self.connect_dialog = ConnectDialog()
         self.connect_button.clicked.connect(self.connect_dialog.show)
         self.stats_window = StatsWindow()
@@ -163,6 +173,7 @@ class MainWindow(QMainWindow):
         self.help_window = MarkDownViewer(os.path.join(os.path.dirname(os.path.dirname((os.getcwd()))), "README.md"),
                                           "Hilfe")
         self.help_button.clicked.connect(self.help_window.show)
+        self.temporary_windows = []
         self.show()
 
     def center_window(self):
@@ -174,6 +185,9 @@ class MainWindow(QMainWindow):
         qr.moveCenter(cp)
         # top left of rectangle becomes top left of window centering it
         self.move(qr.topLeft())
+
+    def add_window(self, window: QWidget):
+        self.temporary_windows.append(window)
 
 
 class App(QApplication):
