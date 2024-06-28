@@ -1,9 +1,10 @@
 import re
 from threading import Thread
+from multiprocessing.pool import ThreadPool
 
 import pyqtgraph
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QMessageBox, QLabel
+from PyQt5.QtCore import Qt, QThread, pyqtSignal, pyqtSlot, QObject
+from PyQt5.QtWidgets import QMessageBox, QLabel, QApplication
 
 from api.microcontroller import *
 from .data import Archive
@@ -31,12 +32,6 @@ class Controller:
         self.timer_thread = Thread(target=self.timer.count)
 
         self.session_thread = None
-
-        # error message box
-        self.error_message_box = QMessageBox(parent=self.main_window)
-        self.error_message_box.setWindowTitle("BetaFocus - Fehlermeldung")
-        self.error_message_box.setIcon(QMessageBox.Critical)
-        self.error_message_box.setStyleSheet("color: white")
 
         # data
         self.archive = Archive()
@@ -69,9 +64,8 @@ class Controller:
         """
         if self.mc_connector is None:
             if self.port is None:
-                self.error_message_box.setText(
-                    "Session kann nicht gestartet werden, da kein Port ausgewählt wurde. Wähle bitte einen Port im Verbindungsfenster aus.")
-                self.error_message_box.show()
+                self.create_error_message_box("Bitte wähle einen gültigen Port im Verbindungsfenster aus.",
+                                              self.main_window)
             else:
                 try:
                     self.main_window.setCursor(Qt.WaitCursor)
@@ -79,9 +73,9 @@ class Controller:
                     self.main_window.setCursor(Qt.ArrowCursor)
                 except Exception as e:
                     self.main_window.setCursor(Qt.ArrowCursor)
-                    self.error_message_box.setText(
-                        "Session kann nicht gestartet werden, da keine serielle Verbindung mit dem Port kreiert werden kann, wähle einen gültigen Port im Verbindungsfenster aus.")
-                    self.error_message_box.show()
+                    self.create_error_message_box(
+                        "Session kann nicht gestartet werden, da keine serielle Verbindung mit dem Port kreiert werden kann, wähle einen gültigen Port im Verbindungsfenster aus.",
+                        self.main_window)
             return
 
         self.run_window.show()
@@ -92,11 +86,28 @@ class Controller:
         if not self.timer_thread.is_alive():
             self.timer_thread = Thread(target=self.timer.count)
 
-        if self.session_thread is None or not self.session_thread.is_alive():
-            self.session_thread = Thread(target=self.mc_connector.start_session)
+        if self.session_thread is None or self.session_thread.isFinished():
+            self.session_thread = SessionThread(self)
+            self.session_thread.session_stopped.connect(self.handle_start_session_error)
 
         self.timer_thread.start()
         self.session_thread.start()
+
+    def handle_start_session_error(self, result):
+        self.stop_session()
+
+        if result == -3:
+            error_text = "Die Verbindung gibt keine gültige Daten zurück, bitte wähle den richtigen Port aus"
+        elif result == -2:
+            error_text = "Session konnte nicht gestartet werden, da die serielle Verbindung nicht geöffnet werden kann. Bitte versuche es später erneut oder wähle anderne Port aus."
+        elif result == -1:
+            error_text = "Session wurde beendet, weil es zu einem Fehler beim Lesen der Daten kam."
+        elif result == 0:
+            error_text = "Session wurde beendet, weil es zu einem Timeout von mehr als 10 s kam."
+        else:
+            error_text = "No idea how you got here"
+
+        self.create_error_message_box(error_text, self.main_window)
 
     def pause_session(self):
         self.timer.pause()
@@ -111,14 +122,26 @@ class Controller:
         self.run_window.pause_button.show()
 
     def stop_session(self):
+        result = self.mc_connector.stop_session()
+        if result == -1:
+            # Session already closed or not started, ignore call
+            return
+
+        if result == 0:
+            self.create_error_message_box(
+                "Session konnte nicht gestoppt werden, da die serielle Verbindung nicht geschlossen werden kann. Bitte versuche es später erneut.",
+                self.run_window)
+            return
+
+        self.timer.stop()
+
         # Reset state of run buttons
         self.run_window.resume_button.hide()
         self.run_window.pause_button.show()
+        self.run_window.hide()
 
         self.main_window.start_button.setEnabled(True)
         self.eval_window.time_label.setText(self.timer.get_format_time_string())
-        self.timer.stop()
-        self.mc_connector.stop_session()
         self.prepare_eval_window(self.mc_connector.last_session_name())
         self.prepare_archive_window(reset_plot=True, show=False)
 
@@ -131,9 +154,9 @@ class Controller:
         except Exception as e:
             print(e)
             self.connect_dialog.setCursor(Qt.ArrowCursor)
-            self.error_message_box.setText(
-                "Session kann nicht gestartet werden, da keine serielle Verbindung mit dem Port kreiert werden kann, wähle einen gültigen Port im Verbindungsfenster aus.")
-            self.error_message_box.show()
+            self.create_error_message_box(
+                "Session kann nicht gestartet werden, da keine serielle Verbindung mit dem Port kreiert werden kann, wähle einen gültigen Port im Verbindungsfenster aus.",
+                self.main_window)
 
     def insert_ports_to_combobox(self):
         combo_box = self.connect_dialog.combo_box
@@ -141,15 +164,10 @@ class Controller:
         combo_box.addItems(MicroController.get_available_ports())
 
     def create_eval_window(self, index):
-        session_name, _ = self.stats_window.labels[index].text().split(" ")
-        if session_name == "-":
-            error_message_box = QMessageBox(parent=self.stats_window)
-            error_message_box.setWindowTitle("BetaFocus - Fehlermeldung")
-            error_message_box.setIcon(QMessageBox.Critical)
-            error_message_box.setStyleSheet("color: white")
-            error_message_box.setText("Diese Session gibt es nicht!")
-            error_message_box.show()
+        if self.stats_window.labels[index].text() == "-":
+            self.create_error_message_box("Diese Session gibt es nicht!", self.stats_window)
             return
+        session_name, _ = self.stats_window.labels[index].text().split(" ")
         self.prepare_eval_window(session_name, reload_archive=False, new_window=True)
 
     def prepare_eval_window(self, session_name, reload_archive=False, new_window=False):
@@ -183,12 +201,12 @@ class Controller:
         inf_line4 = pyqtgraph.InfiniteLine(pos=(0, session.get_lower()), angle=0, movable=False, pen=red_pen)
 
         # top canvas
-        eval_window.plotWidget1.plot(session.get_x_vals(), session.get_y_vals())
+        eval_window.plotWidget1.plot(session.get_x_vals(), session.get_y_vals(), symbol='x')
         eval_window.plotWidget1.addItem(inf_line1, ignoreBounds=False)
         eval_window.plotWidget1.addItem(inf_line2, ignoreBounds=False)
         eval_window.plotWidget1.plotItem.autoRange()
         # bottom canvas
-        eval_window.plotWidget2.plot(self.archive.get_x_data(), self.archive.get_mean_vals())
+        eval_window.plotWidget2.plot(self.archive.get_x_data(), self.archive.get_mean_vals(), symbol='x')
         eval_window.plotWidget2.addItem(inf_line3, ignoreBounds=False)
         eval_window.plotWidget2.addItem(inf_line4, ignoreBounds=False)
         eval_window.plotWidget2.plotItem.autoRange()
@@ -204,12 +222,7 @@ class Controller:
 
             # Check if the name is already taken
             if self.archive.get_session(new_session_name) is not None:
-                error_message_box = QMessageBox(parent=eval_window)
-                error_message_box.setWindowTitle("BetaFocus - Fehlermeldung")
-                error_message_box.setIcon(QMessageBox.Critical)
-                error_message_box.setStyleSheet("color: white")
-                error_message_box.setText("Eine Session mit dem Namen gibt es schon!!")
-                error_message_box.show()
+                self.create_error_message_box("Eine Session mit dem Namen gibt es schon!!", eval_window)
                 return
 
             # Check if the name is a valid file name and does not contain spaces
@@ -221,18 +234,13 @@ class Controller:
                 eval_window.close()
             else:
                 # Display an error message if the name is not valid
-                error_message_box = QMessageBox(parent=eval_window)
-                error_message_box.setWindowTitle("BetaFocus - Fehlermeldung")
-                error_message_box.setIcon(QMessageBox.Critical)
-                error_message_box.setStyleSheet("color: white")
-                error_message_box.setText("Der Session-Name darf keine Leerzeichen oder illegale Sonderzeichen enthalten.")
-                error_message_box.show()
+                self.create_error_message_box("Der Session-Name darf keine Leerzeichen oder illegale Sonderzeichen enthalten.", eval_window)
 
     def prepare_archive_window(self, reset_plot=False, show=True):
         if not self.archive.sessions_csv_created():
-            self.error_message_box.setText(
-                "Es sind keine Sessions vorhanden, da noch keine Sessions aufgezeichnet wurden. Drücke auf dem grünen Knopf und starte deine erste Session!")
-            self.error_message_box.show()
+            self.create_error_message_box(
+                "Es sind keine Sessions vorhanden, da noch keine Sessions aufgezeichnet wurden. Drücke auf dem grünen Knopf und starte deine erste Session!",
+                self.main_window)
             return
 
         # Enable and disable buttons
@@ -292,6 +300,15 @@ class Controller:
         else:
             self.stats_window.prev_button.hide()  # If there are no more previous pages, hide the prev button
 
+    @staticmethod
+    def create_error_message_box(text, parent):
+        error_message_box = QMessageBox(parent=parent)
+        error_message_box.setWindowTitle("BetaFocus - Fehlermeldung")
+        error_message_box.setIcon(QMessageBox.Critical)
+        error_message_box.setStyleSheet("color: white")
+        error_message_box.setText(text)
+        error_message_box.show()
+
 
 class Timer:
 
@@ -336,3 +353,16 @@ class Timer:
         mins: float = self.passed // 60
         hours: float = mins // 60
         return f"{int(hours):02d}:{int(mins):02d}:{int(secs):02d}"
+
+
+class SessionThread(QThread):
+    session_stopped = pyqtSignal(int)
+
+    def __init__(self, controller):
+        QThread.__init__(self)
+        self.controller = controller
+
+    def run(self):
+        result = self.controller.mc_connector.start_session()
+        if result != 1:
+            self.session_stopped.emit(result)

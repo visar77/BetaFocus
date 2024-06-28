@@ -1,3 +1,5 @@
+# NOTE: All prints statements are for debugging purposes and will be removed in the final version.
+
 import os
 import sys
 import time
@@ -6,6 +8,7 @@ from os.path import dirname as up_dir
 from threading import Semaphore
 
 import serial.tools.list_ports
+from serial.serialutil import SerialException
 
 # Standard baudrate
 BAUDRATE = 9600
@@ -44,15 +47,22 @@ class MicroController:
         Opens the serial connection and flushes the input buffer.
         :return: None
         """
-        self.__ser.open()
-        self.__ser.flushInput()
+        try:
+            self.__ser.open()
+            self.__ser.flushInput()
+        except SerialException as e:
+            print("Can't open serial port because of ", e)
 
     def last_package(self):
         """
         Reads the data from the serial connection and returns a string in CSV format, which represents the last package
         recorded by the hardware.
-        :return: string, the last package in CSV format OR None if no package was found
+        :return: the last package in CSV Format OR
+                 "NO CSV FOUND" if no CSV was found whilst reading more than 10 lines OR
+                 "ERROR" if an error occurred
+                 "TIMEOUT" if the readLine went to timeout
         """
+        lines_read_without_csv = 0
         # Read line by line from the serial connection
         while self.is_open():
             line = None
@@ -63,15 +73,10 @@ class MicroController:
                 # Close the connection if an error occurs
                 self.close()
                 print("Can't read from serial port because of ", e)
-                break
+                return "ERROR"
 
             if line == "b''" or line == '':  # This means readLine went to timeout
-                self.close()
-                break
-
-            if line is None:  # If for some other reason line is still None break
-                self.close()
-                break
+                return "TIMEOUT"
 
             # Check if read line contains the CSV data
             if "CSV" in line:
@@ -80,6 +85,10 @@ class MicroController:
                 # Add timestamp to the front of the package and return it
                 full_package = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S.%f') + ";" + s
                 return full_package
+            else:
+                lines_read_without_csv += 1
+                if lines_read_without_csv > 20:
+                    return "NO CSV FOUND"
         return None
 
     def close(self):
@@ -87,7 +96,10 @@ class MicroController:
         Closes the serial connection.
         :return: None
         """
-        self.__ser.close()
+        try:
+            self.__ser.close()
+        except SerialException as e:
+            print("Can't close serial port because of ", e)
 
     def switch_connection(self, port, baudrate=BAUDRATE):
         """
@@ -97,9 +109,12 @@ class MicroController:
         :param baudrate: int, The new baudrate or the serial connection (default: 9600).
         :return: None
         """
-        self.__port = port
-        self.__baudrate = baudrate
-        self.__ser = serial.Serial(port, baudrate)
+        try:
+            self.__port = port
+            self.__baudrate = baudrate
+            self.__ser = serial.Serial(port, baudrate)
+        except SerialException as e:
+            print("Can't switch serial port because of ", e)
 
     @staticmethod
     def get_available_ports():
@@ -167,7 +182,14 @@ class MCConnector:
 
         It uses a lock to ensure that the loop is not reading data while the connection with the hardware is being closed
         by stop_session.
-        :return: None
+
+        It won't call stop_session under any circumstances as the use of start and stop is strictly to be kept separate and
+        handled by another object (e.g. a controller).
+        :return: -3 if the connection doesn't give any packages,
+                 -2 if the port can't be opened,
+                 -1 if the port can't be read from,
+                  0 if the session timed out
+                  1 if the session successfully started and terminated
         """
         # Get the date when the session started
         self.__session_date = datetime.now().strftime("%y-%m-%d_%H-%M-%S-%f")
@@ -177,11 +199,12 @@ class MCConnector:
 
         # Open serial connection explicitly
         if not self.__arduino.is_open():
-            self.open()
-
-        # Check if data can be received
-        if not self.__open:
-            print("Connection not open! Session can't be started")
+            try:
+                self.open()
+            except SerialException as e:
+                print("Can't open serial port because of ", e)
+                print("Session can't be started")
+                return -2
 
         while self.__open:
             self.__lock.acquire()
@@ -194,36 +217,65 @@ class MCConnector:
                     print("Pausing")
                     continue
 
-                # If package is None,
-                if package is None:
-                    print("No package found! Check connection")
-                    continue
+                if package == "ERROR":
+                    print("Error while reading from serial port")
+                    if self.__arduino.is_open():
+                        self.__arduino.close()  # Could raise a SerialException, but extremely unlikely
+                    self.__lock.release()
+                    return -1
+
+                if package == "TIMEOUT":
+                    print("Timeout occured (> 10 s) while reading from serial port!")
+                    self.__lock.release()
+                    return 0
+
+                if package == "NO CSV FOUND":
+                    print("Serial connection has no valid data! Wrong connection")
+                    self.__lock.release()
+                    return -3
 
                 # Add the time passed since the session started to the start of the package
                 # and add the package to the list
                 package = str(self.__paused_time + time.monotonic() - self.__timer_start) + ";" + package
-                print("package received: ", package)
                 self.__packages.append(package)
+                print("package received: ", package)
+                print("packages receveid: ", len(self.__packages))
             finally:
-                print("lol")
                 self.__lock.release()
-                time.sleep(0.01)  # To prevent busy waiting
+                time.sleep(0.05)  # To prevent busy waiting
 
-        print("Session stopped")
+        # Everything went well
+        return 1
 
     def stop_session(self):
         """
         Stops the current session, writes the logged data to a CSV file, and closes the serial connection.
         The CSV file is saved in the data folder with a timestamp in its name. The session is also added to
         the sessions.csv file, which keeps track of all sessions.
+        If the session has already been stopped and there are no packages / recorded data OR the session can't be stopped,
+        then it does nothing.
 
         It uses a lock to ensure that the loop in start_session is not reading data while the connection with the hardware
-        :return None
+        :return -1 if the session had already been stopped and there was no data recorded
+                 0 if the session can't be stopped,
+                 1 if it can (will be useful for gui)
         """
         self.__lock.acquire()
         try:
             if self.__arduino.is_open():
-                self.close()  # Close the connection and stops the session logging done by start_session
+                try:
+                    self.close()  # Close the connection and stops the session logging done by start_session
+                except SerialException as e:
+                    print("Can't close serial port because of ", e)
+                    print("Session can't be stopped, try again later.")
+                    self.__lock.release()
+                    return 0
+            else:
+                print("Session already stopped")
+                if len(self.__packages) == 0:
+                    print("No data was recorded!")
+                    self.__lock.release()
+                    return -1
 
             # Paths to data folder and session csv
             path = os.path.join(up_dir(up_dir(up_dir(os.path.realpath(__file__)))), "data")
@@ -278,6 +330,8 @@ class MCConnector:
             self.__timer_start = None
         finally:
             self.__lock.release()
+
+        return 1
 
     def pause_session(self):
         """
