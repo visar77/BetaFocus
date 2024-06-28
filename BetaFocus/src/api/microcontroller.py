@@ -3,6 +3,7 @@ import sys
 import time
 from datetime import datetime, timezone
 from os.path import dirname as up_dir
+from threading import Semaphore
 
 import serial.tools.list_ports
 
@@ -93,7 +94,7 @@ class MicroController:
         Switches the connection to another port.
 
         :param port: str, The new serial port to connect to.
-        :param baudrate: int, The new baudrate for the serial connection (default: 9600).
+        :param baudrate: int, The new baudrate or the serial connection (default: 9600).
         :return: None
         """
         self.__port = port
@@ -153,8 +154,8 @@ class MCConnector:
         self.__timer_start = None
         self.__paused_time = 0.0
         self.__session_date = None
-
-        self.receive = self.__arduino.is_open()
+        self.__lock = Semaphore()
+        self.__open = self.__arduino.is_open()
 
     def start_session(self):
         """
@@ -163,6 +164,9 @@ class MCConnector:
         The data is in the form of packages, which are strings with following format:
         "TIMERTIME;TIMESTAMP;SIGNAL_QUALITY;ATTENTION;MEDITATION;DELTA;THETA;LOW ALPHA;HIGH ALPHA;"
         The data gets stored in the list self.__packages.
+
+        It uses a lock to ensure that the loop is not reading data while the connection with the hardware is being closed
+        by stop_session.
         :return: None
         """
         # Get the date when the session started
@@ -176,28 +180,34 @@ class MCConnector:
             self.open()
 
         # Check if data can be received
-        if not self.receive:
+        if not self.__open:
             print("Connection not open! Session can't be started")
 
-        while self.receive:
-            # Get package from the hardware through MicroController
-            package = self.__arduino.last_package()
+        while self.__open:
+            self.__lock.acquire()
+            try:
+                # Get package from the hardware through MicroController
+                package = self.__arduino.last_package()
 
-            # Ignore packages if the session is paused
-            if self.__pause:
-                print("Pausing")
-                continue
+                # Ignore packages if the session is paused
+                if self.__pause:
+                    print("Pausing")
+                    continue
 
-            # If package is None,
-            if package is None:
-                print("No package found! Check connection")
-                continue
+                # If package is None,
+                if package is None:
+                    print("No package found! Check connection")
+                    continue
 
-            # Add the time passed since the session started to the start of the package
-            # and add the package to the list
-            package = str(self.__paused_time + time.monotonic() - self.__timer_start) + ";" + package
-            print("package received: ", package)
-            self.__packages.append(package)
+                # Add the time passed since the session started to the start of the package
+                # and add the package to the list
+                package = str(self.__paused_time + time.monotonic() - self.__timer_start) + ";" + package
+                print("package received: ", package)
+                self.__packages.append(package)
+            finally:
+                print("lol")
+                self.__lock.release()
+                time.sleep(0.01)  # To prevent busy waiting
 
         print("Session stopped")
 
@@ -206,66 +216,73 @@ class MCConnector:
         Stops the current session, writes the logged data to a CSV file, and closes the serial connection.
         The CSV file is saved in the data folder with a timestamp in its name. The session is also added to
         the sessions.csv file, which keeps track of all sessions.
+
+        It uses a lock to ensure that the loop in start_session is not reading data while the connection with the hardware
         :return None
         """
-        if self.__arduino.is_open():
-            self.close()  # Close the connection and stops the session logging done by start_session
+        self.__lock.acquire()
+        try:
+            if self.__arduino.is_open():
+                self.close()  # Close the connection and stops the session logging done by start_session
 
-        # Paths to data folder and session csv
-        path = os.path.join(up_dir(up_dir(up_dir(os.path.realpath(__file__)))), "data")
-        file_name = rf"session_{self.__session_date}"
-        file_path = os.path.join(path, file_name + ".csv")
+            # Paths to data folder and session csv
+            path = os.path.join(up_dir(up_dir(up_dir(os.path.realpath(__file__)))), "data")
+            file_name = rf"session_{self.__session_date}"
+            file_path = os.path.join(path, file_name + ".csv")
 
-        # Write the session csv file
-        header_session_line = "TIMERTIME;TIMESTAMP;SIGNAL_QUALITY;ATTENTION;MEDITATION;DELTA;THETA;LOW ALPHA;HIGH ALPHA;LOW BETA;HIGH BETA;LOW GAMMA; MID GAMMA;RAW WAVE DATA\n"
+            # Write the session csv file
+            header_session_line = "TIMERTIME;TIMESTAMP;SIGNAL_QUALITY;ATTENTION;MEDITATION;DELTA;THETA;LOW ALPHA;HIGH ALPHA;LOW BETA;HIGH BETA;LOW GAMMA; MID GAMMA;RAW WAVE DATA\n"
 
-        # Create the data folder if it doesn't exist
-        if not os.path.isdir(path):
-            os.makedirs(path)
+            # Create the data folder if it doesn't exist
+            if not os.path.isdir(path):
+                os.makedirs(path)
 
-        # Write the session data to the session csv file
-        with open(file_path, "w+") as f:
-            f.write(header_session_line)
-            for pack in self.__packages:
-                f.write(pack + "\n")
+            # Write the session data to the session csv file
+            with open(file_path, "w+") as f:
+                f.write(header_session_line)
+                for pack in self.__packages:
+                    f.write(pack + "\n")
 
-        session_csv_path = os.path.join(path, "sessions.csv")
+            session_csv_path = os.path.join(path, "sessions.csv")
 
-        # Add to sessions.csv or create session.csv
-        header_line = "INDEX;DATE;FILE_NAME\n"
+            # Add to sessions.csv or create session.csv
+            header_line = "INDEX;DATE;FILE_NAME\n"
 
-        # Check if sessions.csv exists, if not create it
-        # Note: Race conditions possible, but should not be relevant (or possible) for this program (see class docstring)
-        if not os.path.exists(session_csv_path):
-            with open(session_csv_path, "a+") as f:
-                f.write(header_line)
+            # Check if sessions.csv exists, if not create it
+            # Note: Race conditions possible, but should not be relevant (or possible) for this program (see class docstring)
+            if not os.path.exists(session_csv_path):
+                with open(session_csv_path, "a+") as f:
+                    f.write(header_line)
 
-        # Get the index for the new session
-        with open(session_csv_path, "r+") as f:
-            lines = f.readlines()
-            if not lines:  # if session.csv is empty, which shouldn't happen, write header
-                f.seek(0)
-                f.write(header_line)
-                index = 0
-            else:
-                index = lines[-1].split(";")[0]
-                if index == "INDEX":
+            # Get the index for the new session
+            with open(session_csv_path, "r+") as f:
+                lines = f.readlines()
+                if not lines:  # if session.csv is empty, which shouldn't happen, write header
+                    f.seek(0)
+                    f.write(header_line)
                     index = 0
                 else:
-                    index = int(index) + 1
+                    index = lines[-1].split(";")[0]
+                    if index == "INDEX":
+                        index = 0
+                    else:
+                        index = int(index) + 1
 
-        # Add session to sessions.csv
-        with open(session_csv_path, "a+") as f:
-            date = file_name[8:-4]  # cutting session_ and .csv out
-            f.write(f"{index};{date};{file_name}\n")
+            # Add session to sessions.csv
+            with open(session_csv_path, "a+") as f:
+                date = file_name[8:-4]  # cutting session_ and .csv out
+                f.write(f"{index};{date};{file_name}\n")
 
-        self.__packages = []
-        self.__session_date = None
-        self.__timer_start = None
+            self.__packages = []
+            self.__session_date = None
+            self.__timer_start = None
+        finally:
+            self.__lock.release()
 
     def pause_session(self):
         """
         Pauses the current session. While a session is paused, no data is read from the hardware.
+        It doesn't close the connection to the hardware and therefore there is no need for a lock.
         :return:
         """
         if self.__pause:  # Can't really happen, but better safe than sorry
@@ -308,7 +325,7 @@ class MCConnector:
         Opens the serial connection to the hardware. This method needs to be called before starting a session.
         :return: None
         """
-        self.receive = True
+        self.__open = True
         self.__arduino.open()
 
     def close(self):
@@ -316,5 +333,5 @@ class MCConnector:
         Closes the serial connection to the hardware. This method should be called after a session is stopped.
         :return: None
         """
-        self.receive = False
+        self.__open = False
         self.__arduino.close()

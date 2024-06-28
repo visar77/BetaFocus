@@ -43,7 +43,11 @@ class Archive:
                               session_date)
             self.sessions.append(session)
             data = session.data
+
+            if len(data['TIMESTAMP'].values.tolist()) == 0:
+                continue
             i = 0
+
             while data['TIMESTAMP'].values.tolist()[i] is None:
                 i += 1
                 if i >= len(data['TIMESTAMP'].values.tolist()) - 1:
@@ -55,7 +59,7 @@ class Archive:
             while data['TIMESTAMP'].values.tolist()[i] is None:
                 i -= 1
             abs_time = data['TIMESTAMP'].values.tolist()[i] - timestamp
-            self.x_data.append(timestamp / 1000 / 1000 / 1000)
+            self.x_data.append(session.date_timestamp.timestamp())
             self.x_data.sort()
             self.y_data.append(abs_time / 1000 / 1000 / 1000 / 60)
             self.y_data.sort()
@@ -161,7 +165,10 @@ class Session:
 
     def init_data(self):
         self.data = pd.read_csv(self.path, delimiter=';', skip_blank_lines=True, parse_dates=[1], on_bad_lines='skip')
+        if len(self.data['TIMESTAMP'].values.tolist()) == 0:
+            return
         i = 0
+
         while self.data['TIMESTAMP'].values.tolist()[i] is None:
             i += 1
             if i >= len(self.data['TIMESTAMP'].values.tolist()) - 1:
