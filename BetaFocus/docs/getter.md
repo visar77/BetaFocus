@@ -1,1 +1,0 @@
-Bisschen erklärung und so.
