@@ -2,7 +2,37 @@
 [![de](https://img.shields.io/badge/lang-de-red.svg)](https://github.com/visar77/BetaFocus/blob/main/README.de.md)
 [![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/visar77/BetaFocus/blob/main/README.md)
 
-## Informationen
+## Informationen über das Projekt
+BetaFocus ist ein Projekt, das das Mindflex-EEG-Spielzeug von Mattel verwendet, um die Konzentration zu messen und diese in Echtzeit zu visualisieren.
+
+Das Projekt ist in zwei Teile gegliedert:
+die Hardware, die darin besteht, das Mindflex-Spielzeug zu hacken und es mit einem Mikrocontroller zu verbinden, und den Softwareteil, der die Aufmerksamkeitsdaten visualisiert.
+
+Dieses README wurde auf Deutsch und Englisch verfasst. Wenn Sie die deutsche Version sehen möchten, klicken Sie [hier](https://github.com/visar77/BetaFocus/blob/main/README.de.md) oder klicken Sie auf das Abzeichen unter dem Titel.
+
+## Einrichtung
+### 1. Einrichtung des BetaFocus-Geräts
+1. Kaufen Sie ein Mindflex-EEG-Spielzeug von Mattel. Da diese nicht mehr produziert werden, müssen Sie eines von Ebay oder ähnlichen Plattformen besorgen.
+2. Besorgen Sie sich einen Mikrocontroller (Arduino Uno, Nano usw.) mit Bluetooth (nicht BLE!).
+3. (Optional) Besorgen Sie sich ein 128x64 oder 128x32 OLED-Display mit I2C-Schnittstelle.
+4. Folgen Sie unserem Youtube-Tutorial, um das Mindflex-Spielzeug zu hacken und es mit einem Arduino zu verbinden: [Extrem cooles Video](https://youtube.com/HeGSPaNe2Dc)
+
+### 2. Sketch auf den Mikrocontroller hochladen
+1. Lesen Sie das [Arduino-Readme](https://github.com/visar77/BetaFocus/blob/main/Arduino%20Sketches/README.md) und wählen Sie den richtigen Arduino-Sketch aus.
+2. Laden Sie den Sketch über die Arduino IDE oder PlatformIO (VS Code) auf den Mikrocontroller hoch.
+3. Fertig!
+
+### 3. Installation
+#### Ohne Installation
+```shell
+git clone https://github.com/visar77/BetaFocus.git
+cd BetaFocus/BetaFocus/src
+pip install pyserial pyqt5 pyqtgraph pyqtwebengine pandas 
+python3 main.py
+```
+
+#### Release Installation
+(Under development)
 
 ## Bedienung
 

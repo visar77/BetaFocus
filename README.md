@@ -3,10 +3,41 @@
 [![de](https://img.shields.io/badge/lang-de-red.svg)](https://github.com/visar77/BetaFocus/blob/main/README.de.md)
 
 ## About
+BetaFocus is a project that uses the Mindflex EEG toy from Mattel to measure concentration and visualize them in real-time. 
+
+The project is divided into two parts: 
+the hardware, which consists of hacking the Mindflex toy and connecting it to a microcontroller, and the software part, which visualizes the attention data.
+
 This README was written in German and English. If you want to see the German version, click [hier](https://github.com/visar77/BetaFocus/blob/main/README.de.md) or click the badge under the title.
 
-## Usage
+## Setup
 
+### 1. Setup BetaFocus Device
+1. Buy a Mindflex EEG toy from Mattel. As they are not produced anymore, you need to get one from Ebay or similar platforms.
+2. Get a Microcontroller (Arduino Uno, Nano, etc.) with Bluetooth (not BLE!).
+3. (Optional) Get a 128x64 or 128x32 OLED Display with I2C interface.
+4. Follow our YouTube tutorial to hack the Mindflex toy and connect it to an Arduino: [Extremly cool video](https://youtube.com/HeGSPaNe2Dc)
+
+### 2. Upload sketch to the Microcontroller
+1. Read the [Arduino Readme](https://github.com/visar77/BetaFocus/blob/main/Arduino%20Sketches/README.md) and choose the right Arduino sketch.
+2. Upload the sketch to the microcontroller via Arduino IDE or PlatformIO (VS Code).
+3. Done!
+
+### 3. Install BetaFocus
+Only tested with Python 3.8+. Tested on Windows 10, macOS and Ubuntu 22.04.
+
+#### No Installation
+```shell
+git clone https://github.com/visar77/BetaFocus.git
+pip install pyserial pyqt5 pyqtgraph pyqtwebengine pandas 
+cd BetaFocus/BetaFocus/src
+python3 main.py
+```
+
+#### Release Installation
+(Under development)
+
+## Usage
 
 ## Licenses of Components / Used Libraries
 ### Adafruit GFX and SSD1306 library
