@@ -64,6 +64,11 @@ Zuletzt zeigt ein unteres Diagramm die durchschnittlichen Konzentrationswerte al
 3. Um die Daten einer bestimmten Session zu sehen, doppelklicken Sie auf die Session in der Liste ![](Images/archive_select.png) ![](Images/evaluation_archive.png)
 4. Um den Namen einer Session zu ändern, schreiben Sie einen gültigen Namen in das Textfeld und klicken Sie auf "Fertig"
 
+### Hilfe
+Für weitere Informationen zur Nutzung des BetaFocus Device klicken Sie bitte auf den Fragezeichen im Hauptfenster oben rechts. Dort befindet sich eine ausführliche Anleitung zur Bedienung der Software im PDF-Format.
+### Info
+Die Wissenschaft hinter dem Mindflex-Spielzeug basiert auf der EEG-Technologie. Wir erklären die Technologie in unserem Info-PDF, das über den Info-Button im Hauptfenster oben links aufgerufen werden kann.
+
 ## Lizenzen von genutzten Komponenten bzw. Software-Bibliotheken
 ### Adafruit GFX and SSD1306 library
 Ein besonderer Dank geht an die wunderbare Limor Fried (Ladyada) für die Bereitstellung der Open-Source-Software zur Steuerung von i2c- und spi-Minidisplays.

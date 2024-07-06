@@ -1,17 +1,17 @@
-from .ui.ui_mainwindow import Ui_MainWindow
-from .ui.ui_runwindow import Ui_RunWindow
-from .ui.ui_connectdialog import Ui_ConnectDialog
-from .ui.ui_eval import Ui_Eval
-from .ui.ui_archive import Ui_Archive
-
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtCore import Qt, QSize, pyqtSignal
-from PyQt5.QtCore import QUrl
-from PyQt5.QtWebEngineWidgets import QWebEngineView
-
 import os
 import sys
+
+from PyQt5.QtCore import QUrl
+from PyQt5.QtCore import Qt, QSize, pyqtSignal
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt5.QtWidgets import *
+
+from .ui.ui_archive import Ui_Archive
+from .ui.ui_connectdialog import Ui_ConnectDialog
+from .ui.ui_eval import Ui_Eval
+from .ui.ui_mainwindow import Ui_MainWindow
+from .ui.ui_runwindow import Ui_RunWindow
 
 
 class MarkDownViewer(QWidget):
@@ -41,17 +41,24 @@ class PDFViewer(QWebEngineView):
     def __init__(self, path, title):
         """
         Creates
-        :param path: relative path to view.py
+        :param path: absolute path to the PDF file
         :param title: title of window, title will be "BetaFocus - {title}"
         """
         super().__init__()
         self.setFixedSize(920, 620)
         self.setWindowTitle(f"BetaFocus - {title}")
+        path_to_icon = os.path.join(os.path.dirname(__file__), "images", "logo.png")
+        my_icon = QIcon(path_to_icon)
+        self.setWindowIcon(my_icon)
         self.setStyleSheet("background-color: black;")
         self.settings().setAttribute(self.settings().WebAttribute.PluginsEnabled, True)
         self.settings().setAttribute(self.settings().WebAttribute.PdfViewerEnabled, True)
-        self.pdf_path = f'file://{"%20".join(path)}'
-        self.load(QUrl(f'file://{os.path.abspath(path)}'))
+        # Ensure the path is absolute and correctly formatted for URL
+        file_path = 'file:///' + os.path.abspath(path).replace('\\', '/')
+        self.load(QUrl(file_path))
+
+        self.loadFinished.connect(self.onLoadFinished)
+
 
 
 class ConnectDialog(QDialog):
@@ -155,8 +162,8 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-
-        path_to_icon = os.path.join(os.path.dirname(__file__), "images", "logo.png")
+        path_to_images = os.path.join(os.path.dirname(__file__), "images")
+        path_to_icon = os.path.join(path_to_images, "logo.png")
         my_icon = QIcon(path_to_icon)
         self.setWindowIcon(my_icon)
 
@@ -166,12 +173,12 @@ class MainWindow(QMainWindow):
         self.start_button = self.ui.start_button
         # statistics button at the bottom right
         self.stats_button = self.ui.stats_button
-        pic = QPixmap("./gui/images/stats.png")
+        pic = QPixmap(os.path.join(path_to_images, "stats.png"))
         self.stats_button.setIcon(QIcon(pic))
         self.stats_button.setIconSize(QSize(20, 20))
         # connect button at the bottom left
         self.connect_button = self.ui.connect_button
-        pic = QPixmap("./gui/images/connect.jpeg")
+        pic = QPixmap(os.path.join(path_to_images, "connect.jpeg"))
         self.connect_button.setIcon(QIcon(pic))
         self.connect_button.setIconSize(QSize(20, 20))
         # information button in the top left corner
@@ -185,10 +192,11 @@ class MainWindow(QMainWindow):
         self.connect_dialog = ConnectDialog()
         self.connect_button.clicked.connect(self.connect_dialog.show)
         self.stats_window = StatsWindow()
-        self.info_window = MarkDownViewer(os.path.join(os.path.dirname(os.path.dirname((os.getcwd()))), "README.md"),
+        self.info_window = PDFViewer(os.path.join(path_to_images, "Info_Seite_Dark.pdf"),
                                           "Info")
+        print(os.path.join(path_to_images, "Info_Seite_Dark.pdf"))
         self.info_button.clicked.connect(self.info_window.show)
-        self.help_window = MarkDownViewer(os.path.join(os.path.dirname(os.path.dirname((os.getcwd()))), "README.md"),
+        self.help_window = PDFViewer(os.path.join(path_to_images, "FAQ_PDF_Dark.pdf"),
                                           "Hilfe")
         self.help_button.clicked.connect(self.help_window.show)
         self.temporary_windows = []

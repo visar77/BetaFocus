@@ -154,7 +154,7 @@ class Ui_MainWindow(object):
         self.label.setText(QCoreApplication.translate("MainWindow", u"BetaFocus", None))
         self.help_button.setToolTip(QCoreApplication.translate("MainWindow", u"Hilfe", None))
         self.help_button.setText(QCoreApplication.translate("MainWindow", u"?", None))
-        self.start_button.setText(QCoreApplication.translate("MainWindow", u"Los geht's!\t\t\t\t\t\t", None))
+        self.start_button.setText(QCoreApplication.translate("MainWindow", u"Los geht's!\t\t\t", None))
         self.connect_button.setText(QCoreApplication.translate("MainWindow", u"Verbinden", None))
         self.stats_button.setText(QCoreApplication.translate("MainWindow", u"Statistiken", None))
     # retranslateUi
