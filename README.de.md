@@ -31,10 +31,38 @@ pip install pyserial pyqt5 pyqtgraph pyqtwebengine pandas
 python3 main.py
 ```
 
-#### Release Installation
-(Under development)
+#### Release-Installation
+(In Entwicklung)
 
-## Bedienung
+## Bedienung der Software
+### Starten und Stoppen einer Session unter Windows 10
+1. Öffnen Sie den Geräte-Manager ![](Images/device_manager_before.png)
+2. Verbinden Sie sich über Bluetooth mit dem BetaFocus-Gerät ![](Images/connect_bluetooth.png)
+3. Schauen Sie sich den geöffneten COM-Port an und merken Sie sich die Nummer ![](Images/device_manager_after.png)
+4. Öffnen Sie die BetaFocus-Software ![](Images/main_connect.png)
+5. Gehen Sie zu Verbinden -> COM-Port und wählen Sie die COM-Port-Nummer aus
+
+   - Da die Sketche zwei COM-Ports erstellen, müssen Sie überprüfen, welcher der richtige ist
+   - Versuchen Sie, sich mit einem COM-Port zu verbinden und starten Sie eine Session (siehe Schritt 6). Wenn nach 10 Sekunden ein Timeout-Fehler auftritt, dann haben Sie den falschen COM-Port ausgewählt und der andere ist der richtige
+   ![](Images/select_right_port.png)
+6. Setzen Sie das Headset auf und klicken Sie auf "Los geht's", um eine Session zu starten
+   ![](Images/session_being_taken.png)
+7. Stoppen Sie die Session, indem Sie auf das rote Quadrat klicken
+
+### Starten und Stoppen einer Session auf anderen Betriebssystemen
+1. Verbinden Sie sich über Bluetooth mit dem BetaFocus-Gerät
+2. Wählen Sie den richtigen Port aus, indem Sie die verfügbaren Ports ausprobieren, die in der Software angezeigt werden (Schritt 5 in der Anleitung für Windows 10)
+
+### Auswertung der Sitzungsdaten
+Nachdem eine Session gestoppt wurde, sehen Sie die Zeit in Sekunden, in denen Sie sich konzentriert haben (das bedeutet, dass der Konzentrationswert über 40 lag), den maximalen Konzentrationswert und die Konzentrationswerte über die Zeit mit einer Regressionslinie, die die Entwicklung der Konzentrationswerte in der Session anzeigt.
+Zuletzt zeigt ein unteres Diagramm die durchschnittlichen Konzentrationswerte aller aufgezeichneten Sessions.
+   ![](Images/evaluation.png)
+
+### Daten alter Sessions ansehen
+1. Klicken Sie im Hauptfenster auf den Button "Statistik"
+2. Sie sehen eine Liste aller aufgezeichneten Sessions und ein Diagramm der durchschnittlichen Konzentrationszeit aller Sessions ![](Images/archive.png)
+3. Um die Daten einer bestimmten Session zu sehen, doppelklicken Sie auf die Session in der Liste ![](Images/archive_select.png) ![](Images/evaluation_archive.png)
+4. Um den Namen einer Session zu ändern, schreiben Sie einen gültigen Namen in das Textfeld und klicken Sie auf "Fertig"
 
 ## Lizenzen von genutzten Komponenten bzw. Software-Bibliotheken
 ### Adafruit GFX and SSD1306 library

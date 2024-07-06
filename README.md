@@ -38,6 +38,34 @@ python3 main.py
 (Under development)
 
 ## Usage
+### Starting and stopping a session on Windows 10
+1. Open system device manager ![](Images/device_manager_before.png)
+2. Connect to the BetaFocus device via Bluetooth ![](Images/connect_bluetooth.png)
+3. Look at the opened COM port and remember the number ![](Images/device_manager_after.png)
+4. Open the BetaFocus software ![](Images/main_connect.png)
+5. Go to Verbinden -> COM Port and select the COM port number
+
+   - Because the sketches create two COM ports, you need to check which one is the right one
+   - Try to connect to one COM port and start a session via step 6. If a timeout error occurs after 10 seconds, then you have selected the wrong COM port and the other one is the correct one
+   ![](Images/select_right_port.png)
+6. Put headset on and click on "Los geht's" to start a session
+   ![](Images/session_being_taken.png)
+7. Stop the session by clicking on the red square
+
+### Starting and stopping a session on other operating systems
+1. Connect to the BetaFocus device via Bluetooth
+2. Select the correct port by trying out the available ports that are shown in the software (step 5 in the Windows 10 guide)
+
+### Evaluating the session data
+After a session has been stopped, you will see the time in seconds that you have concentrated (that means that the concentration value was over 40), the maximum concentration value and the concentration values over time with a regression line indicating the trend of the concentration values.
+Lastly a bottom graph shows the average concentration values of all sessions that have been recorded.
+   ![](Images/evaluation.png)
+
+### Checking old session data
+1. Click on the "Statistik" button in the main window
+2. You will see a list of all sessions that have been recorded and a graph of the average concentration time of all sessions ![](Images/archive.png)
+3. To see the data of a specific session, double-click on the session in the list ![](Images/archive_select.png) ![](Images/evaluation_archive.png)
+4. To change the name of a session, write a valid name in the text field and click on "Fertig"
 
 ## Licenses of Components / Used Libraries
 ### Adafruit GFX and SSD1306 library
