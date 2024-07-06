@@ -17,14 +17,9 @@ class Ui_Archive(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Archive")
-        Form.resize(920, 620)
-        sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(Form.sizePolicy().hasHeightForWidth())
+        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         Form.setSizePolicy(sizePolicy)
-        Form.setMinimumSize(QSize(920, 620))
-        Form.setMaximumSize(QSize(920, 620))
+
         Form.setStyleSheet(u"background-color: black;")
         self.widget = QWidget(Form)
         self.widget.setObjectName(u"widget")
@@ -37,7 +32,7 @@ class Ui_Archive(object):
         self.top_label.setSizePolicy(sizePolicy)
         self.top_label.setMinimumSize(QSize(920, 150))
         self.top_label.setMaximumSize(QSize(16777215, 200))
-        self.top_label.setAlignment(Qt.AlignHCenter|Qt.AlignVCenter)
+        self.top_label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         font = QFont()
         font.setPointSize(60)
         self.top_label.setFont(font)
@@ -97,19 +92,32 @@ class Ui_Archive(object):
         self.prev_button.setObjectName(u"prev_button")
         self.prev_button.setFont(font1)
         self.prev_button.hide()
-        self.prev_button.setStyleSheet(u"color: white;")
-
+        self.prev_button.setStyleSheet(u"border-style: outset;\n"
+                                       "border-width: 2px;\n"
+                                       "border-radius: 10px;\n"
+                                       "border-color: white;\n"
+                                       "min-width: 5em;\n"
+                                       "min-height: 1em;\n"
+                                       "padding: 7px;\n"
+                                       "margin-top: 40px;\n"
+                                       "color: white;")
 
         self.horizontalLayout.addWidget(self.prev_button)
 
         self.next_button = QPushButton(">", self.widget)
         self.next_button.setObjectName(u"next_button")
         self.next_button.setFont(font1)
-        self.next_button.setStyleSheet(u"color: white;")
-
+        self.next_button.setStyleSheet(u"border-style: outset;\n"
+                                       "border-width: 2px;\n"
+                                       "border-radius: 10px;\n"
+                                       "border-color: white;\n"
+                                       "min-width: 5em;\n"
+                                       "min-height: 1em;\n"
+                                       "padding: 7px;\n"
+                                       "margin-top: 40px;\n"
+                                       "color: white;")
 
         self.horizontalLayout.addWidget(self.next_button)
-
 
         self.gridLayout.addLayout(self.horizontalLayout, 5, 0, 1, 1)
 
@@ -132,34 +140,46 @@ class Ui_Archive(object):
         self.pushButton.setContentsMargins(0, 40, 0, 0)
         self.pushButton.setFont(font1)
         self.pushButton.setStyleSheet(u"border-style: outset;\n"
-"border-width: 2px;\n"
-"border-radius: 10px;\n"
-"border-color: white;\n"
-"min-width: 15em;\n"
-"min-height: 3em;\n"
-"padding: 7px;\n"
-"margin-top: 40px;\n"
-"color: white;")
+                                      "border-width: 2px;\n"
+                                      "border-radius: 10px;\n"
+                                      "border-color: white;\n"
+                                      "min-width: 15em;\n"
+                                      "min-height: 3em;\n"
+                                      "padding: 7px;\n"
+                                      "margin-top: 40px;\n"
+                                      "color: white;")
 
-        self.gridLayout.addWidget(self.pushButton, 4, 1, 1, 1, Qt.AlignHCenter|Qt.AlignVCenter)
-
+        self.gridLayout.addWidget(self.pushButton, 4, 1, 1, 1, Qt.AlignHCenter | Qt.AlignVCenter)
 
         self.gridLayout_2.addLayout(self.gridLayout, 1, 0, 1, 1)
 
-
         self.retranslateUi(Form)
 
+        Form.setFixedSize(self.gridLayout_2.sizeHint())
+
         QMetaObject.connectSlotsByName(Form)
+
     # setupUi
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"Form", None))
-        self.top_label.setText(QCoreApplication.translate("Form", u"<html><head/><body><p align=\"center\"><span style=\" font-size:40pt;\">Archiv</span></p></body></html>", None))
-        self.label_1.setText(QCoreApplication.translate("Form", u"<html><head/><body><p><span style=\" font-size:20pt;\"> </span></p></body></html>", None))
-        self.label_2.setText(QCoreApplication.translate("Form", u"<html><head/><body><p><span style=\" font-size:20pt;\"> </span></p></body></html>", None))
-        self.label_3.setText(QCoreApplication.translate("Form", u"<html><head/><body><p><span style=\" font-size:20pt;\"> </span></p></body></html>", None))
-        self.label_4.setText(QCoreApplication.translate("Form", u"<html><head/><body><p><span style=\" font-size:20pt;\"> </span></p></body></html>", None))
-        self.label_5.setText(QCoreApplication.translate("Form", u"<html><head/><body><p><span style=\" font-size:20pt;\"> </span></p></body></html>", None))
+        self.top_label.setText(QCoreApplication.translate("Form",
+                                                          u"<html><head/><body><p align=\"center\"><span style=\" font-size:40pt;\">Archiv</span></p></body></html>",
+                                                          None))
+        self.label_1.setText(QCoreApplication.translate("Form",
+                                                        u"<html><head/><body><p><span style=\" font-size:20pt;\"> </span></p></body></html>",
+                                                        None))
+        self.label_2.setText(QCoreApplication.translate("Form",
+                                                        u"<html><head/><body><p><span style=\" font-size:20pt;\"> </span></p></body></html>",
+                                                        None))
+        self.label_3.setText(QCoreApplication.translate("Form",
+                                                        u"<html><head/><body><p><span style=\" font-size:20pt;\"> </span></p></body></html>",
+                                                        None))
+        self.label_4.setText(QCoreApplication.translate("Form",
+                                                        u"<html><head/><body><p><span style=\" font-size:20pt;\"> </span></p></body></html>",
+                                                        None))
+        self.label_5.setText(QCoreApplication.translate("Form",
+                                                        u"<html><head/><body><p><span style=\" font-size:20pt;\"> </span></p></body></html>",
+                                                        None))
         self.pushButton.setText(QCoreApplication.translate("Form", u"Go Focus Now!", None))
     # retranslateUi
-

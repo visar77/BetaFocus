@@ -12,9 +12,6 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 import os
 import sys
-import matplotlib
-
-matplotlib.use('Qt5Agg')
 
 
 class MarkDownViewer(QWidget):

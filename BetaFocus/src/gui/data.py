@@ -42,27 +42,17 @@ class Archive:
             session = Session(os.path.join(self.path, str(session_file_name) + ".csv"), str(session_file_name),
                               session_date)
             self.sessions.append(session)
-            data = session.data
 
-            if len(data['TIMESTAMP'].values.tolist()) == 0:
-                continue
-            i = 0
+            total_time = 0
+            timestamps = session.data['TIMERTIME'].values.tolist()
+            attentions = session.data['ATTENTION'].values.tolist()
 
-            while data['TIMESTAMP'].values.tolist()[i] is None:
-                i += 1
-                if i >= len(data['TIMESTAMP'].values.tolist()) - 1:
-                    break
-            if i >= len(data['TIMESTAMP'].values.tolist()) - 1:
-                continue
-            timestamp = data['TIMESTAMP'].values.tolist()[i]
-            i = -1
-            while data['TIMESTAMP'].values.tolist()[i] is None:
-                i -= 1
-            abs_time = data['TIMESTAMP'].values.tolist()[i] - timestamp
+            for i in range(1, len(attentions)):
+                if attentions[i] > 40:
+                    total_time += timestamps[i] - timestamps[i - 1]
+
             self.x_data.append(session.date_timestamp.timestamp())
-            self.x_data.sort()
-            self.y_data.append(abs_time / 1000 / 1000 / 1000 / 60)
-            self.y_data.sort()
+            self.y_data.append(total_time / 60)
             self.mean_vals.append(session.get_mean())
 
         print(self.x_data)

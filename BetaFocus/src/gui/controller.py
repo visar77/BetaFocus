@@ -1,12 +1,13 @@
 import re
 from threading import Thread
-from multiprocessing.pool import ThreadPool
+import time
 
+import numpy as np
 import pyqtgraph
-from PyQt5.QtCore import Qt, QThread, pyqtSignal, pyqtSlot, QObject
-from PyQt5.QtWidgets import QMessageBox, QLabel, QApplication
+from PyQt5.QtCore import Qt, QThread, pyqtSignal
+from PyQt5.QtWidgets import QMessageBox, QLabel
 
-from api.microcontroller import *
+from api.microcontroller import MCConnector
 from .data import Archive
 from .view import MainWindow, EvalWindow
 
@@ -50,8 +51,8 @@ class Controller:
         self.run_window.pause_button.clicked.connect(self.pause_session)
         self.run_window.resume_button.clicked.connect(self.resume_session)
         self.run_window.close_signal.connect(self.stop_session)
-        self.eval_window.archiv_button.clicked.connect(self.prepare_archive_window)
-        self.main_window.stats_button.clicked.connect(self.prepare_archive_window)
+        self.eval_window.archiv_button.clicked.connect(lambda state, x=True, y=True: self.prepare_archive_window(x, y))
+        self.main_window.stats_button.clicked.connect(lambda state, x=True, y=True: self.prepare_archive_window(x, y))
         self.stats_window.start_button.clicked.connect(self.start_session)
         self.stats_window.next_button.clicked.connect(self.get_next_five_sessions)
         self.stats_window.prev_button.clicked.connect(self.get_prev_five_sessions)
@@ -161,14 +162,14 @@ class Controller:
     def insert_ports_to_combobox(self):
         combo_box = self.connect_dialog.combo_box
         combo_box.clear()
-        combo_box.addItems(MicroController.get_available_ports())
+        combo_box.addItems(MCConnector.get_available_ports())
 
     def create_eval_window(self, index):
         if self.stats_window.labels[index].text() == "-":
             self.create_error_message_box("Diese Session gibt es nicht!", self.stats_window)
             return
         session_name, _ = self.stats_window.labels[index].text().split(" ")
-        self.prepare_eval_window(session_name, reload_archive=False, new_window=True)
+        self.prepare_eval_window(session_name, reload_archive=True, new_window=True)
 
     def prepare_eval_window(self, session_name, reload_archive=False, new_window=False):
         if reload_archive:
@@ -187,6 +188,21 @@ class Controller:
         eval_window.fertig_button.clicked.connect(lambda: self.submit_session_name(eval_window))
         session = self.archive.get_session(session_name)
 
+        total_time = 0
+        timestamps = session.data['TIMERTIME'].values.tolist()
+        attentions = session.data['ATTENTION'].values.tolist()
+
+        for i in range(1, len(attentions)):
+            if attentions[i] > 40:
+                total_time += timestamps[i] - timestamps[i - 1]
+
+        hours = total_time // 3600
+        total_time %= 3600
+        minutes = total_time // 60
+        seconds = total_time % 60
+
+        eval_window.time_label.setText(f"{int(hours):02d}:{int(minutes):02d}:{int(seconds):02d}")
+
         red_pen = pyqtgraph.mkPen(color=(255, 0, 0), style=Qt.DashLine)
         green_pen = pyqtgraph.mkPen(color=(0, 128, 0), style=Qt.DashLine)
 
@@ -201,7 +217,18 @@ class Controller:
         inf_line4 = pyqtgraph.InfiniteLine(pos=(0, session.get_lower()), angle=0, movable=False, pen=red_pen)
 
         # top canvas
-        eval_window.plotWidget1.plot(session.get_x_vals(), session.get_y_vals(), symbol='x')
+        x = session.get_x_vals()
+        y = session.get_y_vals()
+        eval_window.plotWidget1.addLegend(offset=8)
+
+        # Calculate the linear regression line
+        coef = np.polyfit(x, y, 1)
+        print(coef)
+        poly1d_fn = np.poly1d(coef)
+
+        eval_window.plotWidget1.plot(x, y)
+        eval_window.plotWidget1.plot(x, poly1d_fn(x), pen=pyqtgraph.mkPen(color=(0, 255, 0), width=2), name="Regressionsgerade")
+
         eval_window.plotWidget1.addItem(inf_line1, ignoreBounds=False)
         eval_window.plotWidget1.addItem(inf_line2, ignoreBounds=False)
         eval_window.plotWidget1.plotItem.autoRange()
@@ -236,7 +263,7 @@ class Controller:
                 # Display an error message if the name is not valid
                 self.create_error_message_box("Der Session-Name darf keine Leerzeichen oder illegale Sonderzeichen enthalten.", eval_window)
 
-    def prepare_archive_window(self, reset_plot=False, show=True):
+    def prepare_archive_window(self, reset_plot=True, show=True):
         if not self.archive.sessions_csv_created():
             self.create_error_message_box(
                 "Es sind keine Sessions vorhanden, da noch keine Sessions aufgezeichnet wurden. Drücke auf dem grünen Knopf und starte deine erste Session!",
@@ -271,13 +298,24 @@ class Controller:
             self.stats_window.labels[i].setFont(self.stats_window.labels_font[i])
             self.stats_window.labels[i].setText(sessions[i])
 
-        self.archive.init_data()
         if reset_plot:
             self.stats_window.plotWidget.plotItem.clear()
-        self.stats_window.plotWidget.plot(self.archive.get_x_data(), self.archive.get_y_data(), symbol='x')
-        self.stats_window.update()
-        if show:
-            self.stats_window.show()
+            self.archive.init_data()
+            self.stats_window.plotWidget.addLegend()
+
+            x = self.archive.get_x_data()
+            y = self.archive.get_y_data()
+
+            self.stats_window.plotWidget.plot(x, y, symbol='x')
+
+            # Calculate the linear regression line
+            coef = np.polyfit(x, y, 1)
+            poly1d_fn = np.poly1d(coef)
+            self.stats_window.plotWidget.plot(x, poly1d_fn(x), pen=pyqtgraph.mkPen(color=(0, 255, 0), width=2), name="Regressionsgerade")
+
+            self.stats_window.update()
+            if show:
+                self.stats_window.show()
 
     def get_next_five_sessions(self):
         total_pages = (self.archive.get_num_of_sessions() + 4) // 5  # Calculate total pages
@@ -286,7 +324,7 @@ class Controller:
             if self.archive_page == total_pages:  # If this is the last page, hide the next button
                 self.stats_window.next_button.hide()
             self.stats_window.prev_button.show()  # Show the previous button as there are previous pages
-            self.prepare_archive_window()  # Update the window with the new set of sessions
+            self.prepare_archive_window(reset_plot=False)  # Update the window with the new set of sessions
         else:
             self.stats_window.next_button.hide()  # If there are no more pages, hide the next button
 
@@ -296,7 +334,7 @@ class Controller:
             if self.archive_page == 1:  # If this is the first page, hide the prev button
                 self.stats_window.prev_button.hide()
             self.stats_window.next_button.show()  # Show the next button as there are next pages
-            self.prepare_archive_window()  # Update the window with the new set of sessions
+            self.prepare_archive_window(reset_plot=False)  # Update the window with the new set of sessions
         else:
             self.stats_window.prev_button.hide()  # If there are no more previous pages, hide the prev button
 

@@ -116,32 +116,6 @@ class MicroController:
         except SerialException as e:
             print("Can't switch serial port because of ", e)
 
-    @staticmethod
-    def get_available_ports():
-        """
-        Returns a list of available ports.
-        Inspired by answer of tfeldmann to https://stackoverflow.com/questions/12090503/listing-available-com-ports-with-python
-
-        :raises EnvironmentError: If the platform is unsupported or unknown.
-        :return: list, A list of available ports.
-        """
-        ports = [str(x) for x in sorted(serial.tools.list_ports.comports())]
-
-        cut_ports = []
-        for p in ports:
-            if sys.platform.startswith('win'):
-                p = p.split(" - ")[0]
-            elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
-                p = p.split(" ")[0]
-            elif sys.platform.startswith("darwin"):
-                p = p.split(" ")[0]
-            else:
-                raise EnvironmentError('Unsupported platform')
-            cut_ports.append(p)
-
-        return cut_ports
-
-
 class MCConnector:
     """
     MCConnector represents an interface for the GUI to work with the hardware, without handling the hardware directly.
@@ -200,7 +174,7 @@ class MCConnector:
         # Open serial connection explicitly
         if not self.__arduino.is_open():
             try:
-                self.open()
+                self.__open()
             except SerialException as e:
                 print("Can't open serial port because of ", e)
                 print("Session can't be started")
@@ -264,7 +238,7 @@ class MCConnector:
         try:
             if self.__arduino.is_open():
                 try:
-                    self.close()  # Close the connection and stops the session logging done by start_session
+                    self.__close()  # Close the connection and stops the session logging done by start_session
                 except SerialException as e:
                     print("Can't close serial port because of ", e)
                     print("Session can't be stopped, try again later.")
@@ -358,6 +332,22 @@ class MCConnector:
         self.__pause = False
         self.__timer_start = time.monotonic()
 
+    def __open(self):
+        """
+        Opens the serial connection to the hardware. This method needs to be called before starting a session.
+        :return: None
+        """
+        self.__open = True
+        self.__arduino.open()
+
+    def __close(self):
+        """
+        Closes the serial connection to the hardware. This method should be called after a session is stopped.
+        :return: None
+        """
+        self.__open = False
+        self.__arduino.close()
+
     @staticmethod
     def last_session_name():
         """
@@ -374,18 +364,27 @@ class MCConnector:
 
         return last_session_file_name
 
-    def open(self):
+    @staticmethod
+    def get_available_ports():
         """
-        Opens the serial connection to the hardware. This method needs to be called before starting a session.
-        :return: None
-        """
-        self.__open = True
-        self.__arduino.open()
+        Returns a list of available ports.
+        Inspired by answer of tfeldmann to https://stackoverflow.com/questions/12090503/listing-available-com-ports-with-python
 
-    def close(self):
+        :raises EnvironmentError: If the platform is unsupported or unknown.
+        :return: list, A list of available ports.
         """
-        Closes the serial connection to the hardware. This method should be called after a session is stopped.
-        :return: None
-        """
-        self.__open = False
-        self.__arduino.close()
+        ports = [str(x) for x in sorted(serial.tools.list_ports.comports())]
+
+        cut_ports = []
+        for p in ports:
+            if sys.platform.startswith('win'):
+                p = p.split(" - ")[0]
+            elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
+                p = p.split(" ")[0]
+            elif sys.platform.startswith("darwin"):
+                p = p.split(" ")[0]
+            else:
+                raise EnvironmentError('Unsupported platform')
+            cut_ports.append(p)
+
+        return cut_ports

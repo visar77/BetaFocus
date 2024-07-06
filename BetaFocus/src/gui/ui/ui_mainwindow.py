@@ -16,7 +16,7 @@ class Ui_MainWindow(object):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.resize(900, 600)
-        sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
@@ -42,11 +42,11 @@ class Ui_MainWindow(object):
         self.info_button.setMinimumSize(QSize(25, 25))
         self.info_button.setMaximumSize(QSize(30, 30))
         self.info_button.setStyleSheet(u"border-style: outset;\n"
-"border-width: 2px;\n"
-"border-radius: 14px;\n"
-"border-color: white;\n"
-"padding: 7px;\n"
-"color: white;")
+                                       "border-width: 2px;\n"
+                                       "border-radius: 14px;\n"
+                                       "border-color: white;\n"
+                                       "padding: 7px;\n"
+                                       "color: white;")
 
         self.gridLayout.addWidget(self.info_button, 0, 0, 1, 1, Qt.AlignTop)
 
@@ -74,11 +74,11 @@ class Ui_MainWindow(object):
         self.help_button.setMinimumSize(QSize(25, 25))
         self.help_button.setMaximumSize(QSize(30, 30))
         self.help_button.setStyleSheet(u"border-style: outset;\n"
-"border-width: 2px;\n"
-"border-radius: 14px;\n"
-"border-color: white;\n"
-"padding: 7px;\n"
-"color: white;")
+                                       "border-width: 2px;\n"
+                                       "border-radius: 14px;\n"
+                                       "border-color: white;\n"
+                                       "padding: 7px;\n"
+                                       "color: white;")
 
         self.gridLayout.addWidget(self.help_button, 0, 4, 1, 1, Qt.AlignTop)
 
@@ -92,11 +92,11 @@ class Ui_MainWindow(object):
         font1.setPointSize(25)
         self.start_button.setFont(font1)
         self.start_button.setStyleSheet(u"image: url(./gui/images/start.png);\n"
-"padding-left: 20px;\n"
-"padding-top: 20px;\n"
-"padding-bottom: 50px;\n"
-"text-align: center;\n"
-"color: white;")
+                                        "padding-left: 20px;\n"
+                                        "padding-top: 20px;\n"
+                                        "padding-bottom: 50px;\n"
+                                        "text-align: center;\n"
+                                        "color: white;")
 
         self.gridLayout.addWidget(self.start_button, 1, 2, 1, 1)
 
@@ -104,15 +104,15 @@ class Ui_MainWindow(object):
         self.connect_button.setObjectName(u"pushButton")
         sizePolicy.setHeightForWidth(self.connect_button.sizePolicy().hasHeightForWidth())
         self.connect_button.setSizePolicy(sizePolicy)
-        self.connect_button.setMinimumSize(QSize(244, 75))
+        self.connect_button.setMinimumSize(QSize(250, 75))
         self.connect_button.setMaximumSize(QSize(250, 75))
         self.connect_button.setFont(font1)
         self.connect_button.setStyleSheet(u"border-style: outset;\n"
-"border-width: 2px;\n"
-"border-radius: 10px;\n"
-"border-color: white;\n"
-"min-width:15em;\n"
-"color: white;")
+                                          "border-width: 2px;\n"
+                                          "border-radius: 10px;\n"
+                                          "border-color: white;\n"
+                                          "min-width:15em;\n"
+                                          "color: white;")
 
         self.gridLayout.addWidget(self.connect_button, 2, 1, 1, 1)
 
@@ -120,22 +120,21 @@ class Ui_MainWindow(object):
         self.stats_button.setObjectName(u"stats_button")
         sizePolicy.setHeightForWidth(self.stats_button.sizePolicy().hasHeightForWidth())
         self.stats_button.setSizePolicy(sizePolicy)
-        self.stats_button.setMinimumSize(QSize(244, 75))
+        self.stats_button.setMinimumSize(QSize(250, 75))
         self.stats_button.setMaximumSize(QSize(250, 75))
         self.stats_button.setFont(font1)
         self.stats_button.setStyleSheet(u"border-style: outset;\n"
-"border-width: 2px;\n"
-"border-radius: 10px;\n"
-"border-color: white;\n"
-"min-width:15em;\n"
-"color: white;")
+                                        "border-width: 2px;\n"
+                                        "border-radius: 10px;\n"
+                                        "border-color: white;\n"
+                                        "min-width:15em;\n"
+                                        "color: white;")
 
         self.gridLayout.addWidget(self.stats_button, 2, 3, 1, 1)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 900, 26))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -143,22 +142,19 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
+        MainWindow.adjustSize()
+
         QMetaObject.connectSlotsByName(MainWindow)
     # setupUi
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"BetaFocus", None))
-#if QT_CONFIG(tooltip)
         self.info_button.setToolTip(QCoreApplication.translate("MainWindow", u"Wie funktioniert's?", None))
-#endif // QT_CONFIG(tooltip)
         self.info_button.setText(QCoreApplication.translate("MainWindow", u"i", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"BetaFocus", None))
-#if QT_CONFIG(tooltip)
         self.help_button.setToolTip(QCoreApplication.translate("MainWindow", u"Hilfe", None))
-#endif // QT_CONFIG(tooltip)
         self.help_button.setText(QCoreApplication.translate("MainWindow", u"?", None))
         self.start_button.setText(QCoreApplication.translate("MainWindow", u"Los geht's!\t\t\t\t\t\t", None))
         self.connect_button.setText(QCoreApplication.translate("MainWindow", u"Verbinden", None))
         self.stats_button.setText(QCoreApplication.translate("MainWindow", u"Statistiken", None))
     # retranslateUi
-
