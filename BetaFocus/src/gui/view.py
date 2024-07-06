@@ -57,9 +57,6 @@ class PDFViewer(QWebEngineView):
         file_path = 'file:///' + os.path.abspath(path).replace('\\', '/')
         self.load(QUrl(file_path))
 
-        self.loadFinished.connect(self.onLoadFinished)
-
-
 
 class ConnectDialog(QDialog):
 
@@ -193,11 +190,11 @@ class MainWindow(QMainWindow):
         self.connect_button.clicked.connect(self.connect_dialog.show)
         self.stats_window = StatsWindow()
         self.info_window = PDFViewer(os.path.join(path_to_images, "Info_Seite_Dark.pdf"),
-                                          "Info")
+                                     "Info")
         print(os.path.join(path_to_images, "Info_Seite_Dark.pdf"))
         self.info_button.clicked.connect(self.info_window.show)
         self.help_window = PDFViewer(os.path.join(path_to_images, "FAQ_PDF_Dark.pdf"),
-                                          "Hilfe")
+                                     "Hilfe")
         self.help_button.clicked.connect(self.help_window.show)
         self.temporary_windows = []
         self.show()
