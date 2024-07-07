@@ -71,10 +71,13 @@ Lastly a bottom graph shows the average concentration values of all sessions tha
 4. To change the name of a session, write a valid name in the text field and click on "Fertig"
 
 ### Help
-For more information on how to use the the software, click on the question mark button in the main window on the top right. There you will find a detailed explanation of the software as a PDF.
+For more information on how to use the software, click on the question mark button in the main window on the top right. There you will find a detailed explanation of the software as a PDF.
 
+It is unfortunately only available in German at the moment.
 ### Info
 The science behind the Mindflex toy is based on the EEG technology. We explain the technology in our Info PDF, which can be accessed through the info button in the main window at the top left.
+
+It is unfortunately only available in German at the moment.
 ## Licenses of Components / Used Libraries
 ### Adafruit GFX and SSD1306 library
 
