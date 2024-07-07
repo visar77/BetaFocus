@@ -17,6 +17,9 @@ Dieses README wurde auf Deutsch und Englisch verfasst. Wenn Sie die deutsche Ver
 3. (Optional) Besorgen Sie sich ein 128x64 oder 128x32 OLED-Display mit I2C-Schnittstelle.
 4. Folgen Sie unserem Youtube-Tutorial, um das Mindflex-Spielzeug zu hacken und es mit einem Arduino zu verbinden: [Extrem cooles Video](https://youtube.com/HeGSPaNe2Dc)
 
+Leider wird das BetaFocus-Gerät mit einem Display nicht lange halten, da die Stromversorgung von 4,5 V nach 10 Stunden Nutzung die 3,3 V Marke erreichen wird. 
+Um die Batterielebensdauer zu maximieren, wäre es am besten, das Gerät ohne Display zu verwenden.
+
 ### 2. Sketch auf den Mikrocontroller hochladen
 1. Lesen Sie das [Arduino-Readme](https://github.com/visar77/BetaFocus/blob/main/Arduino%20Sketches/README.md) und wählen Sie den richtigen Arduino-Sketch aus.
 2. Laden Sie den Sketch über die Arduino IDE oder PlatformIO (VS Code) auf den Mikrocontroller hoch.
