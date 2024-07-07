@@ -34,6 +34,11 @@ pip install pyserial pyqt5 pyqtgraph pyqtwebengine pandas
 python3 main.py
 ```
 
+Für Ubuntu Nutzer könnte folgender Shell-Kommand notwendig sein für die Ausführung:
+```shell
+sudo apt install pyqtwayland5
+```
+
 #### Release-Installation
 (In Entwicklung)
 
