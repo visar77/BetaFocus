@@ -70,7 +70,7 @@ Lastly a bottom graph shows the average concentration values of all sessions tha
 ### Help
 For more information on how to use the the software, click on the question mark button in the main window on the top right. There you will find a detailed explanation of the software as a PDF.
 
-## Info
+### Info
 The science behind the Mindflex toy is based on the EEG technology. We explain the technology in our Info PDF, which can be accessed through the info button in the main window at the top left.
 ## Licenses of Components / Used Libraries
 ### Adafruit GFX and SSD1306 library
