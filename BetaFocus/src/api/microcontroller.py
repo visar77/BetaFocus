@@ -116,6 +116,7 @@ class MicroController:
         except SerialException as e:
             print("Can't switch serial port because of ", e)
 
+
 class MCConnector:
     """
     MCConnector represents an interface for the GUI to work with the hardware, without handling the hardware directly.
@@ -191,7 +192,7 @@ class MCConnector:
                     print("Pausing")
                     continue
 
-                if package == "ERROR":
+                if package == "ERROR" or package is None:
                     print("Error while reading from serial port")
                     if self.__arduino.is_open():
                         self.__arduino.close()  # Could raise a SerialException, but extremely unlikely
