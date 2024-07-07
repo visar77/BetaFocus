@@ -104,7 +104,7 @@ class Controller:
         elif result == -1:
             error_text = "Session wurde beendet, weil es zu einem Fehler beim Lesen der Daten kam."
         elif result == 0:
-            error_text = "Session wurde beendet, weil es zu einem Timeout von mehr als 10 s kam."
+            error_text = "Session wurde beendet, weil es zu einem Timeout von mehr als 10 s kam. Oder die Verbindung hat keine Pakete gesendet (= Leere Session). Session wurde gespeichert, falls nicht leer."
         else:
             error_text = "No idea how you got here"
 
@@ -230,9 +230,11 @@ class Controller:
         eval_window.plotWidget1.addLegend(offset=8)
 
         # Calculate the linear regression line
-        coef = np.polyfit(x, y, 1)
-        print(coef)
-        poly1d_fn = np.poly1d(coef)
+        if len(x) == 0 or len(y) == 0:
+            poly1d_fn = lambda x: np.zeros_like(x)
+        else:
+            coef = np.polyfit(x, y, 1)
+            poly1d_fn = np.poly1d(coef)
 
         eval_window.plotWidget1.plot(x, y)
         eval_window.plotWidget1.plot(x, poly1d_fn(x), pen=pyqtgraph.mkPen(color=(0, 255, 0), width=2), name="Regressionsgerade")
