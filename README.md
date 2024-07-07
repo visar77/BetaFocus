@@ -36,6 +36,10 @@ pip install pyserial pyqt5 pyqtgraph pyqtwebengine pandas
 cd BetaFocus/BetaFocus/src
 python3 main.py
 ```
+For Ubuntu users this command might be also necessary:
+```shell
+sudo apt install pyqtwayland5
+```
 
 #### Release Installation
 (Under development)
