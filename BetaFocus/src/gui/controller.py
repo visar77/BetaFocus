@@ -126,6 +126,14 @@ class Controller:
         result = self.mc_connector.stop_session()
         if result == -1:
             # Session already closed or not started, ignore call
+            self.timer.stop()
+
+            # Reset state of run buttons
+            self.run_window.resume_button.hide()
+            self.run_window.pause_button.show()
+            self.run_window.hide()
+            self.main_window.start_button.setEnabled(True)
+            self.eval_window.time_label.setText(self.timer.get_format_time_string())
             return
 
         if result == 0:
