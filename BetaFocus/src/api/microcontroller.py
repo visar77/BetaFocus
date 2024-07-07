@@ -174,7 +174,7 @@ class MCConnector:
         # Open serial connection explicitly
         if not self.__arduino.is_open():
             try:
-                self.__open()
+                self.__open_connection()
             except SerialException as e:
                 print("Can't open serial port because of ", e)
                 print("Session can't be started")
@@ -213,7 +213,6 @@ class MCConnector:
                 package = str(self.__paused_time + time.monotonic() - self.__timer_start) + ";" + package
                 self.__packages.append(package)
                 print("package received: ", package)
-                print("packages receveid: ", len(self.__packages))
             finally:
                 self.__lock.release()
                 time.sleep(0.05)  # To prevent busy waiting
@@ -239,6 +238,10 @@ class MCConnector:
             if self.__arduino.is_open():
                 try:
                     self.__close()  # Close the connection and stops the session logging done by start_session
+                    if len(self.__packages) == 0:
+                        print("No data was recorded!")
+                        self.__lock.release()
+                        return -1
                 except SerialException as e:
                     print("Can't close serial port because of ", e)
                     print("Session can't be stopped, try again later.")
@@ -332,7 +335,7 @@ class MCConnector:
         self.__pause = False
         self.__timer_start = time.monotonic()
 
-    def __open(self):
+    def __open_connection(self):
         """
         Opens the serial connection to the hardware. This method needs to be called before starting a session.
         :return: None
