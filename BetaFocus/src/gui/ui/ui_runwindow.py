@@ -5,6 +5,7 @@
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
+import os.path
 
 from PyQt5.QtCore import *  # type: ignore
 from PyQt5.QtGui import *  # type: ignore
@@ -12,6 +13,9 @@ from PyQt5.QtWidgets import *  # type: ignore
 
 
 class Ui_RunWindow(object):
+
+    image_path = os.path.join(os.path.dirname(__file__), "images")
+
     def setupUi(self, RunWindow):
         if not RunWindow.objectName():
             RunWindow.setObjectName(u"RunWindow")
@@ -35,7 +39,7 @@ class Ui_RunWindow(object):
         self.pause_button.setSizePolicy(sizePolicy)
         self.pause_button.setMinimumSize(QSize(120, 120))
         self.pause_button.setMaximumSize(QSize(120, 120))
-        self.pause_button.setStyleSheet(u"image: url(./gui/images/pause.png);")
+        self.pause_button.setStyleSheet(u"image: url(images:pause.png);")
 
         self.gridLayout.addWidget(self.pause_button, 5, 3, 1, 1)
 
@@ -45,7 +49,7 @@ class Ui_RunWindow(object):
         self.resume_button.setSizePolicy(sizePolicy)
         self.resume_button.setMinimumSize(QSize(120, 120))
         self.resume_button.setMaximumSize(QSize(120, 120))
-        self.resume_button.setStyleSheet(u"image: url(./gui/images/start.png);")
+        self.resume_button.setStyleSheet(f"image: url(images:start.png);")
 
         self.gridLayout.addWidget(self.resume_button, 5, 3, 1, 1)
 
@@ -83,7 +87,7 @@ class Ui_RunWindow(object):
         self.stop_button.setSizePolicy(sizePolicy)
         self.stop_button.setMinimumSize(QSize(120, 120))
         self.stop_button.setMaximumSize(QSize(120, 120))
-        self.stop_button.setStyleSheet(u"image: url(./gui/images/stop.png);")
+        self.stop_button.setStyleSheet(u"image: url(images:stop.png);")
 
         self.gridLayout.addWidget(self.stop_button, 5, 1, 1, 1)
 

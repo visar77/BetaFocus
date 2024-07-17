@@ -222,7 +222,7 @@ class Controller:
         inf_line2 = pyqtgraph.InfiniteLine(pos=(0, session.get_upper()), angle=0, movable=False, pen=green_pen)
 
         inf_line3 = pyqtgraph.InfiniteLine(pos=(0, session.get_lower()), angle=0, movable=False, pen=red_pen)
-        inf_line4 = pyqtgraph.InfiniteLine(pos=(0, session.get_lower()), angle=0, movable=False, pen=red_pen)
+        inf_line4 = pyqtgraph.InfiniteLine(pos=(0, session.get_upper()), angle=0, movable=False, pen=green_pen)
 
         # top canvas
         x = session.get_x_vals()
@@ -242,11 +242,14 @@ class Controller:
         eval_window.plotWidget1.addItem(inf_line1, ignoreBounds=False)
         eval_window.plotWidget1.addItem(inf_line2, ignoreBounds=False)
         eval_window.plotWidget1.plotItem.autoRange()
+        eval_window.plotWidget1.plotItem.getViewBox().setLimits(yMin=-20, yMax=120)
+
         # bottom canvas
         eval_window.plotWidget2.plot(self.archive.get_x_data(), self.archive.get_mean_vals(), symbol='x')
         eval_window.plotWidget2.addItem(inf_line3, ignoreBounds=False)
         eval_window.plotWidget2.addItem(inf_line4, ignoreBounds=False)
         eval_window.plotWidget2.plotItem.autoRange()
+        eval_window.plotWidget2.plotItem.getViewBox().setLimits(yMin=-20, yMax=120)
 
         eval_window.max_label.setText(str(session.get_max()))
         eval_window.show()

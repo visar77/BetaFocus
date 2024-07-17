@@ -91,7 +91,7 @@ class Ui_MainWindow(object):
         font1 = QFont()
         font1.setPointSize(25)
         self.start_button.setFont(font1)
-        self.start_button.setStyleSheet(u"image: url(./gui/images/start.png);\n"
+        self.start_button.setStyleSheet(u"image: url(images:start.png);\n"
                                         "padding-left: 20px;\n"
                                         "padding-top: 20px;\n"
                                         "padding-bottom: 50px;\n"
